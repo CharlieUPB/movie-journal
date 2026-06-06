@@ -117,6 +117,11 @@ public class MovieReview : AuditableEntity
 
     public void Delete()
     {
+        if (IsDeleted == true)
+        {
+            return;
+        }
+
         MarkAsUpdated();
         MarkAsDeleted();
     }

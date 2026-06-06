@@ -7,7 +7,7 @@ public class ReviewComment : AuditableEntity
 {
     private const int MaximumCommentLength = 500;
 
-    public Guid MoviewReviewId { get; private set; }
+    public Guid MovieReviewId { get; private set; }
     public Guid UserId { get; private set; }
 
     public string Content { get; private set; }
@@ -20,7 +20,7 @@ public class ReviewComment : AuditableEntity
             throw new DomainException($"Comment content is requiered and should not exceed {MaximumCommentLength} chars");
         }
 
-        MoviewReviewId = moviewReviewId;
+        MovieReviewId = moviewReviewId;
         UserId = userId;
         Content = content;
     }

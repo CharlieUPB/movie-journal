@@ -1,7 +1,6 @@
 ﻿using MovieJournal.Application.MovieReviews;
 using MovieJournal.Domain.Entities;
 using MovieJournal.Domain.Enums;
-using MovieJournal.Domain.ValueObjects;
 using MovieJournal.Infrastructure.Persistence.Connection;
 using System.Data;
 
@@ -116,6 +115,7 @@ public sealed class MovieReviewsRepository(ISqlConnectionFactory sqlConnectionFa
 
         return Task.FromResult(entity);
     }
+
     public Task<MovieReview?> GetByIdAsync(Guid id)
     {
         using var connection = sqlConnectionFactory.GetOpenConnection();
@@ -154,31 +154,51 @@ public sealed class MovieReviewsRepository(ISqlConnectionFactory sqlConnectionFa
         return Task.FromResult<MovieReview?>(review);
     }
 
-    public Task<IReadOnlyList<MovieReview>>? GetAllByUserIdAsync(Guid userId)
+    public Task<IReadOnlyList<MovieReview>> ListAsync(MovieReviewQueryCriteria criteria)
     {
         using var connection = sqlConnectionFactory.GetOpenConnection();
         using var command = connection.CreateCommand();
 
-        command.CommandText = """
-            SELECT
-                id,
-                user_id,
-                movie_title,
-                release_year,
-                review_title,
-                review_content,
-                rating,
-                status,
-                created_at,
-                updated_at,
-                is_deleted
-            FROM movie_reviews
-            WHERE user_id = @user_id
-              AND COALESCE(is_deleted, 0) = 0
-            ORDER BY created_at DESC;
-            """;
+        var conditions = new List<string>();
 
-        AddParameter(command, "@user_id", userId.ToString());
+        if (!criteria.IncludeDeleted)
+        {
+            conditions.Add("COALESCE(is_deleted, 0) = 0");
+        }
+
+        if (criteria.UserId.HasValue)
+        {
+            conditions.Add("user_id = @user_id");
+            AddParameter(command, "@user_id", criteria.UserId.Value.ToString());
+        }
+
+        if (criteria.Status.HasValue)
+        {
+            conditions.Add("status = @status");
+            AddParameter(command, "@status", (int)criteria.Status.Value);
+        }
+
+        var whereClause = conditions.Count > 0
+            ? $"WHERE {string.Join(" AND ", conditions)}"
+            : string.Empty;
+
+        command.CommandText = $"""
+        SELECT
+            id,
+            user_id,
+            movie_title,
+            release_year,
+            review_title,
+            review_content,
+            rating,
+            status,
+            created_at,
+            updated_at,
+            is_deleted
+        FROM movie_reviews
+        {whereClause}
+        ORDER BY created_at DESC;
+        """;
 
         using var reader = command.ExecuteReader();
 
@@ -203,17 +223,6 @@ public sealed class MovieReviewsRepository(ISqlConnectionFactory sqlConnectionFa
 
     private static MovieReview MapToMovieReview(IDataRecord reader)
     {
-        var movieInformation = MovieInformation.Rebuild(
-            reader.GetString(reader.GetOrdinal("movie_title")),
-            reader.IsDBNull(reader.GetOrdinal("release_year"))
-                ? null
-                : reader.GetInt32(reader.GetOrdinal("release_year")));
-
-        var reviewInformation = ReviewInformation.Rebuild(
-            reader.GetString(reader.GetOrdinal("review_title")),
-            reader.GetString(reader.GetOrdinal("review_content")),
-            reader.GetInt32(reader.GetOrdinal("rating")));
-
         return MovieReview.Rebuild(
             Guid.Parse(reader.GetString(reader.GetOrdinal("id"))),
             Guid.Parse(reader.GetString(reader.GetOrdinal("user_id"))),

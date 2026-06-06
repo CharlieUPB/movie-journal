@@ -7,7 +7,7 @@ public static class WebServiceExtensions
 
     public static IServiceCollection AddWebServices(this IServiceCollection services)
     {
-        services.AddExceptionHandler<DomainExceptionHandler>();
+        services.AddExceptionHandler<ApplicationExceptionHandler>();
         services.AddProblemDetails();
 
         return services;

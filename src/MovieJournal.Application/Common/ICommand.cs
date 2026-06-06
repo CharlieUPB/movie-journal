@@ -1,7 +1,11 @@
 ﻿namespace MovieJournal.Application.Common;
 
-public interface ICommand<T, K> where T: IUserScopedRequest
+public interface ICommand<TRequest, TResponse> where TRequest: IUserScopedRequest
 {
-    Task<K> Execute(T request);
+    Task<TResponse> Execute(TRequest request);
 }
 
+public interface ICommand<TRequest>
+{
+    Task Execute(TRequest request);
+}

@@ -15,7 +15,16 @@ namespace MovieJournal.Application.MovieReviews.Mappers
                 movieReview.ReviewInformation.ReviewTitle,
                 movieReview.ReviewInformation.ReviewContent,
                 movieReview.ReviewInformation.Rating,
-                movieReview.Status.ToString());
+                movieReview.Status.ToString(),
+                movieReview.CreatedAt,
+                movieReview.UpdatedAt);
+        }
+
+        public static IReadOnlyList<MovieReviewResponse> ToResponseList(IReadOnlyList<MovieReview> movieReviews)
+        {
+            return movieReviews
+                .Select(ToResponse)
+                .ToList();
         }
     }
 }
