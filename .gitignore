@@ -42,3 +42,14 @@ Thumbs.db
 # Mockups
 
 mockups
+
+# Ignore all SQLite database extensions
+*.db
+*.sqlite
+*.sqlite3
+
+# Ignore SQLite temporary journal files
+*.db-journal
+*.sqlite3-journal
+*.db-wal
+*.db-shm

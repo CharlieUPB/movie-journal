@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Text;
 
-namespace MovieJournal.Infrastructure.persistence
+namespace MovieJournal.Infrastructure.Persistence.Connection
 {
     public interface ISqlConnectionFactory
     {

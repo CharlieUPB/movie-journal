@@ -2,7 +2,7 @@
 using MovieJournal.Domain.Entities;
 using MovieJournal.Domain.Enums;
 using MovieJournal.Domain.ValueObjects;
-using MovieJournal.Infrastructure.persistence;
+using MovieJournal.Infrastructure.Persistence.Connection;
 using System.Data;
 
 namespace MovieJournal.Infrastructure.Persistence.MovieReviews;

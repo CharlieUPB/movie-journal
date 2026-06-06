@@ -1,7 +1,7 @@
 ﻿using Microsoft.Data.Sqlite;
 using System.Data;
 
-namespace MovieJournal.Infrastructure.persistence;
+namespace MovieJournal.Infrastructure.Persistence.Connection;
 
 public class SqliteConnectionFactory : ISqlConnectionFactory, IDisposable
 {
