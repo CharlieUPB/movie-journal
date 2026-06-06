@@ -8,6 +8,12 @@ namespace MovieJournal.Domain.ValueObjects
 
         public int? ReleaseYear { get; init; }
 
+        private MovieInformation(string movieTitle, int? releaseYear = null)
+        {
+            MovieTitle = movieTitle.Trim();
+            ReleaseYear = releaseYear;
+        }
+
         private MovieInformation(string? movieTitle, DateOnly today, int? releaseYear = null)
         {
             if (string.IsNullOrWhiteSpace(movieTitle))
@@ -27,6 +33,11 @@ namespace MovieJournal.Domain.ValueObjects
         public static MovieInformation Create(string? movieTitle, DateOnly today, int? releaseYear = null)
         {
             return new MovieInformation(movieTitle, today, releaseYear);
+        }
+
+        public static MovieInformation Rebuild(string movieTitle, int? releaseYear = null)
+        {
+            return new MovieInformation(movieTitle, releaseYear);
         }
     }
 }

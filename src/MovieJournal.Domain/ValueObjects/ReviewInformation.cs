@@ -1,4 +1,5 @@
 ﻿using MovieJournal.Domain.Exceptions;
+using System.Reflection.Metadata;
 
 namespace MovieJournal.Domain.ValueObjects
 {
@@ -11,6 +12,13 @@ namespace MovieJournal.Domain.ValueObjects
         public string ReviewContent { get; init; }
 
         public int Rating { get; init; }
+
+        private ReviewInformation(string title, string content, int rating)
+        {
+            ReviewTitle = title;
+            ReviewContent = content;
+            Rating = rating;
+        }
 
         private ReviewInformation(string? title, string? content, int? rating)
         {
@@ -35,6 +43,11 @@ namespace MovieJournal.Domain.ValueObjects
         }
 
         public static ReviewInformation Create(string? title, string? content, int? rating)
+        {
+            return new ReviewInformation(title, content, rating);
+        }
+
+        public static ReviewInformation Rebuild(string title, string content, int rating)
         {
             return new ReviewInformation(title, content, rating);
         }
