@@ -1,6 +1,6 @@
 ﻿using MovieJournal.Application.Common;
 
-namespace MovieJournal.Application.MovieReviews.Inputs;
+namespace MovieJournal.Application.MovieReviews.Requests;
 
 public record CreateMovieRequest(
     Guid UserId,
