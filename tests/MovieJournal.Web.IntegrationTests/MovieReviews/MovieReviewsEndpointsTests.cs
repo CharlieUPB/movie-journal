@@ -9,8 +9,6 @@ namespace MovieJournal.Web.IntegrationTests.MovieReviews;
 public class MovieReviewsEndpointsTests
 {
     private static readonly Guid DemoUserId = Guid.Parse("11111111-1111-1111-1111-111111111111");
-    private static readonly Guid SeededPublishedReviewId = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
-    private static readonly Guid SeededDraftReviewId = Guid.Parse("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb");
     private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web);
 
     [Fact]
@@ -83,12 +81,22 @@ public class MovieReviewsEndpointsTests
         using var factory = new MovieJournalWebApplicationFactory();
         using var client = factory.CreateClient();
 
-        var response = await client.GetAsync($"/api/movie-reviews/{SeededPublishedReviewId}");
+        var createResponse = await client.PostAsJsonAsync(
+            "/api/movie-reviews",
+            CreateMovieReviewRequest(movieTitle: $"Viewable Movie {Guid.NewGuid():N}"));
+
+        var createdReview = await createResponse.Content
+            .ReadFromJsonAsync<MovieReviewResponse>(JsonOptions);
+
+        Assert.Equal(HttpStatusCode.Created, createResponse.StatusCode);
+        Assert.NotNull(createdReview);
+
+        var response = await client.GetAsync($"/api/movie-reviews/{createdReview.Id}");
         var body = await response.Content.ReadFromJsonAsync<MovieReviewResponse>(JsonOptions);
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.NotNull(body);
-        Assert.Equal(SeededPublishedReviewId, body.Id);
+        Assert.Equal(createdReview.Id, body.Id);
     }
 
     [Fact]
@@ -111,7 +119,7 @@ public class MovieReviewsEndpointsTests
     {
         using var factory = new MovieJournalWebApplicationFactory();
         using var client = factory.CreateClient();
-        var request = CreateMovieReviewRequest();
+        var request = CreateMovieReviewRequest("Dune: Part Two", "One of the greatest sci-fi movies");
 
         var response = await client.PostAsJsonAsync("/api/movie-reviews", request);
         var body = await response.Content.ReadFromJsonAsync<MovieReviewResponse>(JsonOptions);
@@ -206,11 +214,27 @@ public class MovieReviewsEndpointsTests
         using var factory = new MovieJournalWebApplicationFactory();
         using var client = factory.CreateClient();
 
-        var response = await client.PostAsync($"/api/movie-reviews/{SeededDraftReviewId}/publish", null);
-        var body = await response.Content.ReadFromJsonAsync<MovieReviewResponse>(JsonOptions);
+        var createResponse = await client.PostAsJsonAsync(
+            "/api/movie-reviews",
+            CreateMovieReviewRequest(movieTitle: $"Draft Movie {Guid.NewGuid():N}"));
+
+        var createdReview = await createResponse.Content
+            .ReadFromJsonAsync<MovieReviewResponse>(JsonOptions);
+
+        Assert.Equal(HttpStatusCode.Created, createResponse.StatusCode);
+        Assert.NotNull(createdReview);
+        Assert.Equal("Draft", createdReview.Status);
+
+        var response = await client.PostAsync(
+            $"/api/movie-reviews/{createdReview.Id}/publish",
+            null);
+
+        var body = await response.Content
+            .ReadFromJsonAsync<MovieReviewResponse>(JsonOptions);
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.NotNull(body);
+        Assert.Equal(createdReview.Id, body.Id);
         Assert.Equal("Published", body.Status);
     }
 
@@ -234,25 +258,60 @@ public class MovieReviewsEndpointsTests
         using var factory = new MovieJournalWebApplicationFactory();
         using var client = factory.CreateClient();
 
-        var response = await client.PostAsync($"/api/movie-reviews/{SeededPublishedReviewId}/publish", null);
-        var body = await response.Content.ReadFromJsonAsync<ProblemDetailsResponseDto>(JsonOptions);
+        var createResponse = await client.PostAsJsonAsync(
+            "/api/movie-reviews",
+            CreateMovieReviewRequest(movieTitle: $"Already Published Movie {Guid.NewGuid():N}"));
 
-        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        var createdReview = await createResponse.Content
+            .ReadFromJsonAsync<MovieReviewResponse>(JsonOptions);
+
+        Assert.Equal(HttpStatusCode.Created, createResponse.StatusCode);
+        Assert.NotNull(createdReview);
+
+        var firstPublishResponse = await client.PostAsync(
+            $"/api/movie-reviews/{createdReview.Id}/publish",
+            null);
+
+        Assert.Equal(HttpStatusCode.OK, firstPublishResponse.StatusCode);
+
+        var secondPublishResponse = await client.PostAsync(
+            $"/api/movie-reviews/{createdReview.Id}/publish",
+            null);
+
+        var body = await secondPublishResponse.Content
+            .ReadFromJsonAsync<ProblemDetailsResponseDto>(JsonOptions);
+
+        Assert.Equal(HttpStatusCode.BadRequest, secondPublishResponse.StatusCode);
         Assert.NotNull(body);
         Assert.Contains("Only draft reviews can be published", body.Detail);
     }
 
     [Fact]
-    public async Task ArchiveMovieReview_ShouldReturnOkForReviewOwnedByCurrentUser()
+    public async Task ArchiveMovieReview_ShouldReturnOkForReviewOwnkedByCurrentUser()
     {
         using var factory = new MovieJournalWebApplicationFactory();
         using var client = factory.CreateClient();
 
-        var response = await client.PostAsync($"/api/movie-reviews/{SeededPublishedReviewId}/archive", null);
-        var body = await response.Content.ReadFromJsonAsync<MovieReviewResponse>(JsonOptions);
+        var createResponse = await client.PostAsJsonAsync(
+            "/api/movie-reviews",
+            CreateMovieReviewRequest(movieTitle: $"Archivable Movie {Guid.NewGuid():N}"));
+
+        var createdReview = await createResponse.Content
+            .ReadFromJsonAsync<MovieReviewResponse>(JsonOptions);
+
+        Assert.Equal(HttpStatusCode.Created, createResponse.StatusCode);
+        Assert.NotNull(createdReview);
+
+        var response = await client.PostAsync(
+            $"/api/movie-reviews/{createdReview.Id}/archive",
+            null);
+
+        var body = await response.Content
+            .ReadFromJsonAsync<MovieReviewResponse>(JsonOptions);
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.NotNull(body);
+        Assert.Equal(createdReview.Id, body.Id);
         Assert.Equal("Archived", body.Status);
     }
 
@@ -289,15 +348,19 @@ public class MovieReviewsEndpointsTests
         Assert.Equal("Archived", secondArchiveBody?.Status);
     }
 
-    private static object CreateMovieReviewRequest(string? reviewContent = null)
+    private static object CreateMovieReviewRequest(string? movieTitle = null,
+        string? reviewTitle = null,
+        string? reviewContent = null,
+        int reviewRating = 5,
+        int? movieReleaseYear = 2024)
     {
         return new
         {
-            MovieTitle = "Dune: Part Two",
-            ReviewTitle = "One of the greatest sci-fi movies",
+            MovieTitle = movieTitle ?? $"Test Movie {Guid.NewGuid():N}",
+            ReviewTitle = reviewTitle ?? "One of the greatest sci-fi movies",
             ReviewContent = reviewContent ?? "This is valid review content longer than fifty characters for the API integration test.",
-            ReviewRating = 5,
-            MovieReleaseYear = 2024
+            ReviewRating = reviewRating,
+            MovieReleaseYear = movieReleaseYear
         };
     }
 
