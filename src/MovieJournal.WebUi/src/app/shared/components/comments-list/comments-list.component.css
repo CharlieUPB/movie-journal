@@ -1,0 +1,52 @@
+.comments-list {
+  display: grid;
+  gap: 1rem;
+}
+
+h2,
+p {
+  margin: 0;
+}
+
+h2 {
+  font-size: 1.2rem;
+}
+
+.muted,
+header span {
+  color: var(--color-text-muted);
+}
+
+.comment-stack {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.comment {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.85rem;
+  padding: 1rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+}
+
+.avatar {
+  display: inline-grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  color: #ffffff;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-strong));
+  border-radius: 999px;
+  font-weight: 900;
+}
+
+header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: baseline;
+  margin-bottom: 0.25rem;
+}

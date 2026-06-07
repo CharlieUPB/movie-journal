@@ -1,0 +1,18 @@
+.review-editor-page {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.editor-card {
+  padding: 1.5rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-soft);
+}
+
+@media (max-width: 720px) {
+  .editor-card {
+    padding: 1rem;
+  }
+}

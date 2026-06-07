@@ -45,7 +45,7 @@ public class MovieReviewsEndpointsTests
     public async Task ShouldReturnOkAndOnlyCurrentUserReviews()
     {
         using var factory = new MovieJournalWebApplicationFactory();
-        using var client = factory.CreateClient();
+        using var client = await factory.CreateAuthenticatedClientAsync();
 
         var response = await client.GetAsync("/api/movie-reviews/my");
         var body = await response.Content.ReadFromJsonAsync<MovieReviewsListResponse>(JsonOptions);
@@ -60,7 +60,7 @@ public class MovieReviewsEndpointsTests
     public async Task ShouldReturnOkAndOnlyCurrentUserDraftReviews()
     {
         using var factory = new MovieJournalWebApplicationFactory();
-        using var client = factory.CreateClient();
+        using var client = await factory.CreateAuthenticatedClientAsync();
 
         var response = await client.GetAsync("/api/movie-reviews/my?status=Draft");
         var body = await response.Content.ReadFromJsonAsync<MovieReviewsListResponse>(JsonOptions);
@@ -79,7 +79,7 @@ public class MovieReviewsEndpointsTests
     public async Task ShouldReturnOkWhenReviewExistsAndIsViewable()
     {
         using var factory = new MovieJournalWebApplicationFactory();
-        using var client = factory.CreateClient();
+        using var client = await factory.CreateAuthenticatedClientAsync();
 
         var createResponse = await client.PostAsJsonAsync(
             "/api/movie-reviews",
@@ -118,7 +118,7 @@ public class MovieReviewsEndpointsTests
     public async Task ShouldCreateMovieReview()
     {
         using var factory = new MovieJournalWebApplicationFactory();
-        using var client = factory.CreateClient();
+        using var client = await factory.CreateAuthenticatedClientAsync();
         var request = CreateMovieReviewRequest("Dune: Part Two", "One of the greatest sci-fi movies");
 
         var response = await client.PostAsJsonAsync("/api/movie-reviews", request);
@@ -138,7 +138,7 @@ public class MovieReviewsEndpointsTests
     public async Task ShouldReturnBadRequestProblemDetailsWhenReviewContentIsTooShort()
     {
         using var factory = new MovieJournalWebApplicationFactory();
-        using var client = factory.CreateClient();
+        using var client = await factory.CreateAuthenticatedClientAsync();
         var request = CreateMovieReviewRequest(reviewContent: "Too short");
 
         var response = await client.PostAsJsonAsync("/api/movie-reviews", request);
@@ -154,7 +154,7 @@ public class MovieReviewsEndpointsTests
     public async Task ShouldUpdateMovieReview()
     {
         using var factory = new MovieJournalWebApplicationFactory();
-        using var client = factory.CreateClient();
+        using var client = await factory.CreateAuthenticatedClientAsync();
         var createResponse = await client.PostAsJsonAsync("/api/movie-reviews", CreateMovieReviewRequest());
         var createdReview = await createResponse.Content.ReadFromJsonAsync<MovieReviewResponse>(JsonOptions);
         var updateRequest = new
@@ -182,7 +182,7 @@ public class MovieReviewsEndpointsTests
     public async Task ShouldDeleteMovieReview()
     {
         using var factory = new MovieJournalWebApplicationFactory();
-        using var client = factory.CreateClient();
+        using var client = await factory.CreateAuthenticatedClientAsync();
         var createResponse = await client.PostAsJsonAsync("/api/movie-reviews", CreateMovieReviewRequest());
         var createdReview = await createResponse.Content.ReadFromJsonAsync<MovieReviewResponse>(JsonOptions);
 
@@ -197,7 +197,7 @@ public class MovieReviewsEndpointsTests
     public async Task ShouldReturnNoContentWhenDeletingSameReviewTwice()
     {
         using var factory = new MovieJournalWebApplicationFactory();
-        using var client = factory.CreateClient();
+        using var client = await factory.CreateAuthenticatedClientAsync();
         var createResponse = await client.PostAsJsonAsync("/api/movie-reviews", CreateMovieReviewRequest());
         var createdReview = await createResponse.Content.ReadFromJsonAsync<MovieReviewResponse>(JsonOptions);
 
@@ -212,7 +212,7 @@ public class MovieReviewsEndpointsTests
     public async Task PublishMovieReview_ShouldReturnOkForDraftReviewOwnedByCurrentUser()
     {
         using var factory = new MovieJournalWebApplicationFactory();
-        using var client = factory.CreateClient();
+        using var client = await factory.CreateAuthenticatedClientAsync();
 
         var createResponse = await client.PostAsJsonAsync(
             "/api/movie-reviews",
@@ -242,7 +242,7 @@ public class MovieReviewsEndpointsTests
     public async Task PublishMovieReview_ShouldReturnBadRequestProblemDetailsWhenReviewDoesNotExist()
     {
         using var factory = new MovieJournalWebApplicationFactory();
-        using var client = factory.CreateClient();
+        using var client = await factory.CreateAuthenticatedClientAsync();
 
         var response = await client.PostAsync($"/api/movie-reviews/{Guid.NewGuid()}/publish", null);
         var body = await response.Content.ReadFromJsonAsync<ProblemDetailsResponseDto>(JsonOptions);
@@ -256,7 +256,7 @@ public class MovieReviewsEndpointsTests
     public async Task PublishMovieReview_ShouldReturnBadRequestProblemDetailsWhenReviewIsAlreadyPublished()
     {
         using var factory = new MovieJournalWebApplicationFactory();
-        using var client = factory.CreateClient();
+        using var client = await factory.CreateAuthenticatedClientAsync();
 
         var createResponse = await client.PostAsJsonAsync(
             "/api/movie-reviews",
@@ -290,7 +290,7 @@ public class MovieReviewsEndpointsTests
     public async Task ArchiveMovieReview_ShouldReturnOkForReviewOwnkedByCurrentUser()
     {
         using var factory = new MovieJournalWebApplicationFactory();
-        using var client = factory.CreateClient();
+        using var client = await factory.CreateAuthenticatedClientAsync();
 
         var createResponse = await client.PostAsJsonAsync(
             "/api/movie-reviews",
@@ -319,7 +319,7 @@ public class MovieReviewsEndpointsTests
     public async Task ArchiveMovieReview_ShouldReturnBadRequestProblemDetailsWhenReviewDoesNotExist()
     {
         using var factory = new MovieJournalWebApplicationFactory();
-        using var client = factory.CreateClient();
+        using var client = await factory.CreateAuthenticatedClientAsync();
 
         var response = await client.PostAsync($"/api/movie-reviews/{Guid.NewGuid()}/archive", null);
         var body = await response.Content.ReadFromJsonAsync<ProblemDetailsResponseDto>(JsonOptions);
@@ -333,7 +333,7 @@ public class MovieReviewsEndpointsTests
     public async Task ArchiveMovieReview_ShouldBeSafeForAlreadyArchivedReviews()
     {
         using var factory = new MovieJournalWebApplicationFactory();
-        using var client = factory.CreateClient();
+        using var client = await factory.CreateAuthenticatedClientAsync();
         var createResponse = await client.PostAsJsonAsync("/api/movie-reviews", CreateMovieReviewRequest());
         var createdReview = await createResponse.Content.ReadFromJsonAsync<MovieReviewResponse>(JsonOptions);
 

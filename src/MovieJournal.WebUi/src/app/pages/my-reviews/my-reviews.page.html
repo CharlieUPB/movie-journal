@@ -1,0 +1,49 @@
+<section class="grid gap-5">
+  <header class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+    <div>
+      <p class="mb-2 text-xs font-black uppercase tracking-wider text-violet-700 dark:text-violet-300">My Reviews</p>
+      <h1 class="m-0 max-w-3xl text-3xl font-black leading-tight text-slate-950 dark:text-violet-50 sm:text-4xl">Manage your private, published, and archived reviews.</h1>
+    </div>
+    <a class="inline-flex min-h-11 items-center justify-center rounded-md bg-gradient-to-br from-violet-600 to-violet-700 px-4 py-2 font-extrabold text-white no-underline shadow-lg shadow-violet-600/20 transition hover:from-violet-700 hover:to-violet-600" routerLink="/movie-review/create">Create Review</a>
+  </header>
+
+  <div class="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap" aria-label="Review status filters">
+    @for (filter of filters; track filter) {
+      <button
+        type="button"
+        class="min-h-10 rounded-md border px-3 py-2 font-extrabold transition"
+        [ngClass]="
+          selectedFilter() === filter
+            ? 'border-transparent bg-gradient-to-br from-violet-600 to-violet-700 text-white'
+            : 'border-slate-200 bg-white text-slate-600 dark:border-violet-900 dark:bg-[#171323] dark:text-violet-200'
+        "
+        (click)="selectFilter(filter)"
+      >
+        {{ filter }}
+      </button>
+    }
+  </div>
+
+  @if (isLoading()) {
+    <app-state-message kind="loading" title="Loading your reviews" />
+  } @else if (errorMessage()) {
+    <app-state-message kind="error" title="Reviews unavailable" [message]="errorMessage() ?? ''" />
+  } @else if (reviews().length === 0) {
+    <app-state-message kind="empty" title="No reviews found" message="Create a review or change the selected status filter." />
+  } @else {
+    <section class="grid gap-4" aria-label="My movie reviews">
+      @for (review of reviews(); track review.id) {
+        <app-review-card
+          [review]="review"
+          [showActions]="true"
+          [actionDisabled]="actionReviewId() === review.id"
+          (view)="viewReview($event)"
+          (edit)="editReview($event)"
+          (publish)="publishReview($event)"
+          (archive)="archiveReview($event)"
+          (remove)="deleteReview($event)"
+        />
+      }
+    </section>
+  }
+</section>

@@ -1,0 +1,37 @@
+<section class="grid gap-5">
+  <header class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+    <div>
+      <p class="mb-2 text-xs font-black uppercase tracking-wider text-violet-700 dark:text-violet-300">Published Reviews</p>
+      <h1 class="m-0 max-w-3xl text-3xl font-black leading-tight text-slate-950 dark:text-violet-50 sm:text-4xl">Discover thoughtful takes from movie lovers.</h1>
+    </div>
+    <a class="inline-flex min-h-11 items-center justify-center rounded-md bg-gradient-to-br from-violet-600 to-violet-700 px-4 py-2 font-extrabold text-white no-underline shadow-lg shadow-violet-600/20 transition hover:from-violet-700 hover:to-violet-600" routerLink="/movie-review/create">Create Review</a>
+  </header>
+
+  <label class="grid max-w-2xl gap-2 font-bold text-slate-950 dark:text-violet-50">
+    <span>Search reviews</span>
+    <input
+      #searchInput
+      class="min-h-[3.25rem] w-full rounded-md border border-slate-200 bg-white px-4 text-slate-950 shadow-sm outline-none transition focus:border-violet-600 focus:ring-4 focus:ring-violet-600/15 dark:border-violet-900 dark:bg-[#171323] dark:text-violet-50 dark:placeholder:text-violet-200/50"
+      type="search"
+      placeholder="Search by movie title..."
+      [value]="searchTerm()"
+      (input)="updateSearch(searchInput.value)"
+    />
+  </label>
+
+  @if (isLoading()) {
+    <app-state-message kind="loading" title="Loading reviews" message="Fetching published movie reviews." />
+  } @else if (errorMessage()) {
+    <app-state-message kind="error" title="Reviews unavailable" [message]="errorMessage() ?? ''" />
+  } @else if (reviews().length === 0) {
+    <app-state-message kind="empty" title="No published reviews yet" message="Published reviews will show up here." />
+  } @else if (filteredReviews().length === 0) {
+    <app-state-message kind="empty" title="No matching reviews" message="Try a different movie title." />
+  } @else {
+    <section class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3" aria-label="Published movie reviews">
+      @for (review of filteredReviews(); track review.id) {
+        <app-review-card [review]="review" (view)="viewReview($event)" />
+      }
+    </section>
+  }
+</section>

@@ -1,0 +1,37 @@
+.state-message {
+  display: grid;
+  gap: 0.35rem;
+  padding: 1.5rem;
+  color: var(--color-text-muted);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-soft);
+}
+
+.state-kind {
+  margin: 0;
+  color: var(--color-primary);
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+h2,
+p {
+  margin: 0;
+}
+
+h2 {
+  color: var(--color-text);
+  font-size: 1.2rem;
+}
+
+.state-message.error {
+  border-color: color-mix(in srgb, var(--color-danger) 44%, var(--color-border));
+}
+
+.state-message.error .state-kind {
+  color: var(--color-danger);
+}

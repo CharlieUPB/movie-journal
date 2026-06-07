@@ -1,0 +1,29 @@
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 0.25rem 0.55rem;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  color: var(--color-text-muted);
+  background: var(--color-surface-muted);
+  font-size: 0.85rem;
+  font-weight: 800;
+}
+
+.status-badge.published {
+  color: #277947;
+  border-color: color-mix(in srgb, #3fb866 42%, var(--color-border));
+  background: color-mix(in srgb, #3fb866 14%, var(--color-surface));
+}
+
+.status-badge.draft {
+  color: var(--color-primary);
+  border-color: color-mix(in srgb, var(--color-primary) 42%, var(--color-border));
+  background: color-mix(in srgb, var(--color-primary) 12%, var(--color-surface));
+}
+
+.status-badge.archived {
+  color: var(--color-text-muted);
+  background: color-mix(in srgb, var(--color-text-muted) 10%, var(--color-surface));
+}
