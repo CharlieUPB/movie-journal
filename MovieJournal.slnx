@@ -8,6 +8,7 @@
     </Project>
     <Project Path="src/MovieJournal.Application/MovieJournal.Application.csproj" Id="8520ccd9-3cb7-4350-b130-a6d4ae86dbd9" />
     <Project Path="src/MovieJournal.Domain/MovieJournal.Domain.csproj" />
+    <Project Path="src/TaksManagementAI.API/TaksManagementAI.API.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/MovieJournal.Application.UnitTests/MovieJournal.Application.UnitTests.csproj" Id="48b19f48-9ff8-42a5-9499-7d6453b8b639" />
