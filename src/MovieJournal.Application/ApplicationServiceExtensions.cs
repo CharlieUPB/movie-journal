@@ -1,6 +1,9 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using MovieJournal.Application.MovieReviews.Commands;
 using MovieJournal.Application.MovieReviews.Queries;
+using MovieJournal.Application.ReviewComments.Commands;
+using MovieJournal.Application.ReviewComments.Queries;
+using MovieJournal.Application.Users.Commands;
 
 namespace MovieJournal.Application;
 
@@ -14,11 +17,20 @@ public static class ApplicationServiceExtensions
         services.AddScoped<PublishMovieReviewCmd>();
         services.AddScoped<ArchiveMovieReviewCmd>();
 
+        services.AddScoped<RegisterUserCmd>();
+        services.AddScoped<LoginUserCmd>();
+
+        services.AddScoped<AddReviewCommentCmd>();
+        services.AddScoped<UpdateReviewCommentCmd>();
+        services.AddScoped<DeleteReviewCommentCmd>();
+
         services.AddScoped<GetMovieReviewQuery>();
         services.AddScoped<ListMovieReviewsByUserIdAndStatusQuery>();
         services.AddScoped<ListMovieReviewsByUserIdQuery>();
         services.AddScoped<ListMovieReviewsQuery>();
         services.AddScoped<ListPublishedMovieReviewsQuery>();
+        
+        services.AddScoped<ListReviewCommentsQuery>();
 
         return services;
     }
