@@ -4,6 +4,7 @@ using MovieJournal.Application.MovieReviews;
 using MovieJournal.Application.ReviewComments.Mappers;
 using MovieJournal.Application.ReviewComments.Requests;
 using MovieJournal.Application.ReviewComments.Responses;
+using MovieJournal.Application.Users;
 using MovieJournal.Domain.Entities;
 
 namespace MovieJournal.Application.ReviewComments.Commands;
@@ -12,13 +13,16 @@ public class AddReviewCommentCmd : ICommand<AddReviewCommentRequest, ReviewComme
 {
     private readonly IMovieReviewsRepository _movieReviewsRepository;
     private readonly IReviewCommentsRepository _reviewCommentsRepository;
+    private readonly IUserRepository _userRepository;
 
     public AddReviewCommentCmd(
         IMovieReviewsRepository movieReviewsRepository,
-        IReviewCommentsRepository reviewCommentsRepository)
+        IReviewCommentsRepository reviewCommentsRepository,
+        IUserRepository userRepository)
     {
         _movieReviewsRepository = movieReviewsRepository;
         _reviewCommentsRepository = reviewCommentsRepository;
+        _userRepository = userRepository;
     }
 
     public async Task<ReviewCommentResponse> Execute(AddReviewCommentRequest request)
@@ -43,7 +47,11 @@ public class AddReviewCommentCmd : ICommand<AddReviewCommentRequest, ReviewComme
             request.Content);
 
         var createdReviewComment = await _reviewCommentsRepository.CreateAsync(reviewComment);
+        var owner = await _userRepository.GetByIdAsync(createdReviewComment.UserId);
 
-        return ReviewCommentMapper.ToResponse(createdReviewComment);
+        return ReviewCommentMapper.ToResponse(
+            createdReviewComment,
+            owner?.DisplayName ?? "Unknown user",
+            true);
     }
 }

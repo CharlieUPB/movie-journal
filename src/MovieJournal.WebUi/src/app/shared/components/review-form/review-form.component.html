@@ -1,51 +1,55 @@
-<form class="review-form" [formGroup]="form" novalidate>
-  <div class="form-grid">
-    <label class="form-field">
+<form class="grid gap-5" [formGroup]="form" novalidate>
+  <div class="grid grid-cols-1 gap-4 md:grid-cols-[minmax(0,1fr)_180px]">
+    <label class="grid gap-2 font-bold text-slate-950 dark:text-violet-50">
       <span>Movie title</span>
       <input
+        class="min-h-[3.25rem] w-full rounded-md border border-slate-200 bg-white px-4 text-slate-950 outline-none transition focus:border-violet-600 focus:ring-4 focus:ring-violet-600/15 disabled:cursor-not-allowed disabled:opacity-60 dark:border-violet-900 dark:bg-[#211a33] dark:text-violet-50 dark:placeholder:text-violet-200/50"
+        [class.border-rose-600]="showError(movieTitle)"
         type="text"
         autocomplete="off"
         placeholder="e.g., Inception"
         formControlName="movieTitle"
-        [class.invalid]="showError(movieTitle)"
       />
     </label>
 
-    <label class="form-field">
+    <label class="grid gap-2 font-bold text-slate-950 dark:text-violet-50">
       <span>Release year <small>(optional)</small></span>
       <input
+        class="min-h-[3.25rem] w-full rounded-md border border-slate-200 bg-white px-4 text-slate-950 outline-none transition focus:border-violet-600 focus:ring-4 focus:ring-violet-600/15 disabled:cursor-not-allowed disabled:opacity-60 dark:border-violet-900 dark:bg-[#211a33] dark:text-violet-50 dark:placeholder:text-violet-200/50"
+        [class.border-rose-600]="showError(movieReleaseYear)"
         type="number"
         min="1888"
         [max]="currentYear"
         placeholder="e.g., 2010"
         formControlName="movieReleaseYear"
-        [class.invalid]="showError(movieReleaseYear)"
       />
     </label>
 
-    <label class="form-field full">
+    <label class="grid gap-2 font-bold text-slate-950 dark:text-violet-50 md:col-span-2">
       <span>Review title</span>
       <input
+        class="min-h-[3.25rem] w-full rounded-md border border-slate-200 bg-white px-4 text-slate-950 outline-none transition focus:border-violet-600 focus:ring-4 focus:ring-violet-600/15 disabled:cursor-not-allowed disabled:opacity-60 dark:border-violet-900 dark:bg-[#211a33] dark:text-violet-50 dark:placeholder:text-violet-200/50"
+        [class.border-rose-600]="showError(reviewTitle)"
         type="text"
         autocomplete="off"
         placeholder="A memorable headline"
         formControlName="reviewTitle"
-        [class.invalid]="showError(reviewTitle)"
       />
     </label>
 
-    <label class="form-field full">
+    <label class="grid gap-2 font-bold text-slate-950 dark:text-violet-50 md:col-span-2">
       <span>Your review</span>
       <textarea
+        class="min-h-44 w-full resize-y rounded-md border border-slate-200 bg-white px-4 py-3 text-slate-950 outline-none transition focus:border-violet-600 focus:ring-4 focus:ring-violet-600/15 disabled:cursor-not-allowed disabled:opacity-60 dark:border-violet-900 dark:bg-[#211a33] dark:text-violet-50 dark:placeholder:text-violet-200/50"
+        [class.border-rose-600]="showError(reviewContent)"
         rows="8"
         placeholder="Share your thoughts about the movie..."
         formControlName="reviewContent"
-        [class.invalid]="showError(reviewContent)"
       ></textarea>
     </label>
 
-    <fieldset class="rating-field full">
-      <legend>Rating</legend>
+    <fieldset class="m-0 grid gap-2 border-0 p-0 md:col-span-2">
+      <legend class="p-0 font-bold text-slate-950 dark:text-violet-50">Rating</legend>
       <app-rating-stars-input
         [rating]="reviewRating.value"
         [disabled]="readOnly() || isSubmitting()"
@@ -54,33 +58,33 @@
     </fieldset>
   </div>
 
-  <div class="validation-summary">
+  <div class="grid gap-1">
     @if (showError(movieTitle)) {
-      <p>Movie title is required.</p>
+      <p class="m-0 text-sm font-semibold text-rose-600 dark:text-rose-400">Movie title is required.</p>
     }
     @if (showError(movieReleaseYear)) {
-      <p>{{ releaseYearError() }}</p>
+      <p class="m-0 text-sm font-semibold text-rose-600 dark:text-rose-400">{{ releaseYearError() }}</p>
     }
     @if (showError(reviewTitle)) {
-      <p>Review title is required.</p>
+      <p class="m-0 text-sm font-semibold text-rose-600 dark:text-rose-400">Review title is required.</p>
     }
     @if (showError(reviewContent)) {
       @if (reviewContent.hasError('required')) {
-        <p>Review content is required.</p>
+        <p class="m-0 text-sm font-semibold text-rose-600 dark:text-rose-400">Review content is required.</p>
       } @else {
-        <p>Review content must be at least 50 characters.</p>
+        <p class="m-0 text-sm font-semibold text-rose-600 dark:text-rose-400">Review content must be at least 50 characters.</p>
       }
     }
     @if (showError(reviewRating)) {
-      <p>Choose a rating from 1 to 5.</p>
+      <p class="m-0 text-sm font-semibold text-rose-600 dark:text-rose-400">Choose a rating from 1 to 5.</p>
     }
   </div>
 
-  <footer class="form-actions">
+  <footer class="grid gap-3 sm:flex sm:flex-wrap sm:justify-end">
     @if (mode() === 'create') {
       <button
         type="button"
-        class="btn btn-ghost"
+        class="inline-flex min-h-11 items-center justify-center rounded-md border border-violet-500 px-4 py-2 font-extrabold text-violet-700 transition hover:bg-violet-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-violet-400 dark:text-violet-200 dark:hover:bg-violet-950/50"
         [disabled]="readOnly() || isSubmitting()"
         (click)="submit('draft')"
       >
@@ -88,7 +92,7 @@
       </button>
       <button
         type="button"
-        class="btn btn-primary"
+        class="inline-flex min-h-11 items-center justify-center rounded-md bg-gradient-to-br from-violet-600 to-violet-700 px-4 py-2 font-extrabold text-white shadow-lg shadow-violet-600/20 transition hover:from-violet-700 hover:to-violet-600 disabled:cursor-not-allowed disabled:opacity-60"
         [disabled]="readOnly() || isSubmitting()"
         (click)="submit('publish')"
       >
@@ -97,7 +101,7 @@
     } @else {
       <button
         type="button"
-        class="btn btn-primary"
+        class="inline-flex min-h-11 items-center justify-center rounded-md bg-gradient-to-br from-violet-600 to-violet-700 px-4 py-2 font-extrabold text-white shadow-lg shadow-violet-600/20 transition hover:from-violet-700 hover:to-violet-600 disabled:cursor-not-allowed disabled:opacity-60"
         [disabled]="readOnly() || isSubmitting()"
         (click)="submit('save')"
       >

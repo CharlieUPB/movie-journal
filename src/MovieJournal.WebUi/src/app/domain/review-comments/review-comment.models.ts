@@ -1,7 +1,8 @@
 export interface ReviewComment {
   id: string;
   movieReviewId: string;
-  userId: string;
+  ownerName: string;
+  isOwner: boolean;
   content: string;
   createdAt: string;
   updatedAt: string | null;

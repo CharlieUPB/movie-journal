@@ -1,0 +1,68 @@
+<section class="grid min-h-[calc(100dvh-9rem)] place-items-center px-2 py-4 sm:py-10">
+  <article class="w-full max-w-[440px] rounded-lg border border-violet-100 bg-white/95 p-5 shadow-soft dark:border-violet-900/70 dark:bg-[#171323]/95 dark:shadow-soft-dark sm:p-8">
+    <div class="mb-6 grid grid-cols-[auto_1fr] items-center gap-4">
+      <span class="grid size-[3.25rem] place-items-center rounded-full bg-gradient-to-br from-violet-600 to-indigo-700 text-sm font-black text-white shadow-lg shadow-violet-600/25">MJ</span>
+      <div>
+        <p class="mb-1 text-xs font-black uppercase tracking-wider text-violet-700 dark:text-violet-300">Create account</p>
+        <h1 class="m-0 text-2xl font-black leading-tight text-slate-950 dark:text-violet-50">Movie Review Journal</h1>
+      </div>
+    </div>
+
+    <form class="grid gap-3" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <label class="grid gap-1.5 font-bold text-slate-950 dark:text-violet-50">
+        <span>Display name</span>
+        <input class="min-h-[3.25rem] w-full rounded-md border border-slate-200 bg-white px-4 text-slate-950 outline-none transition focus:border-violet-600 focus:ring-4 focus:ring-violet-600/15 dark:border-violet-900 dark:bg-[#211a33] dark:text-violet-50 dark:placeholder:text-violet-200/50" [class.border-rose-600]="showError(displayName)" type="text" autocomplete="name" placeholder="Carlos" formControlName="displayName" />
+      </label>
+      @if (showError(displayName)) {
+        <p class="-mt-1 text-sm font-semibold text-rose-600 dark:text-rose-400">Display name is required.</p>
+      }
+
+      <label class="grid gap-1.5 font-bold text-slate-950 dark:text-violet-50">
+        <span>Email</span>
+        <input class="min-h-[3.25rem] w-full rounded-md border border-slate-200 bg-white px-4 text-slate-950 outline-none transition focus:border-violet-600 focus:ring-4 focus:ring-violet-600/15 dark:border-violet-900 dark:bg-[#211a33] dark:text-violet-50 dark:placeholder:text-violet-200/50" [class.border-rose-600]="showError(email)" type="email" autocomplete="email" placeholder="you@example.com" formControlName="email" />
+      </label>
+      @if (showError(email)) {
+        <p class="-mt-1 text-sm font-semibold text-rose-600 dark:text-rose-400">{{ emailError() }}</p>
+      }
+
+      <label class="grid gap-1.5 font-bold text-slate-950 dark:text-violet-50">
+        <span>Password</span>
+        <div class="relative">
+          <input class="min-h-[3.25rem] w-full rounded-md border border-slate-200 bg-white px-4 pr-20 text-slate-950 outline-none transition focus:border-violet-600 focus:ring-4 focus:ring-violet-600/15 dark:border-violet-900 dark:bg-[#211a33] dark:text-violet-50 dark:placeholder:text-violet-200/50" [class.border-rose-600]="showError(password)" [type]="showPassword() ? 'text' : 'password'" autocomplete="new-password" placeholder="At least 6 characters" formControlName="password" />
+          <button class="absolute right-2 top-1/2 min-h-9 -translate-y-1/2 rounded-md px-3 text-sm font-black text-violet-700 hover:bg-violet-50 dark:text-violet-200 dark:hover:bg-violet-950/60" type="button" (click)="showPassword.set(!showPassword())">
+            {{ showPassword() ? 'Hide' : 'Show' }}
+          </button>
+        </div>
+      </label>
+      @if (showError(password)) {
+        <p class="-mt-1 text-sm font-semibold text-rose-600 dark:text-rose-400">{{ passwordError() }}</p>
+      }
+
+      <label class="grid gap-1.5 font-bold text-slate-950 dark:text-violet-50">
+        <span>Confirm password</span>
+        <input class="min-h-[3.25rem] w-full rounded-md border border-slate-200 bg-white px-4 text-slate-950 outline-none transition focus:border-violet-600 focus:ring-4 focus:ring-violet-600/15 dark:border-violet-900 dark:bg-[#211a33] dark:text-violet-50 dark:placeholder:text-violet-200/50" [class.border-rose-600]="showError(confirmPassword) || showPasswordMismatch()" [type]="showConfirmPassword() ? 'text' : 'password'" autocomplete="new-password" placeholder="Repeat your password" formControlName="confirmPassword" />
+      </label>
+      <button class="-mt-1 justify-self-start rounded-md px-0 py-1 text-sm font-black text-violet-700 hover:bg-violet-50 dark:text-violet-200 dark:hover:bg-violet-950/60" type="button" (click)="showConfirmPassword.set(!showConfirmPassword())">
+        {{ showConfirmPassword() ? 'Hide confirmation' : 'Show confirmation' }}
+      </button>
+      @if (showError(confirmPassword)) {
+        <p class="-mt-1 text-sm font-semibold text-rose-600 dark:text-rose-400">Confirm password is required.</p>
+      } @else if (showPasswordMismatch()) {
+        <p class="-mt-1 text-sm font-semibold text-rose-600 dark:text-rose-400">Passwords must match.</p>
+      }
+
+      @if (errorMessage()) {
+        <div class="rounded-md border border-rose-400/60 bg-rose-50 px-4 py-3 font-bold text-rose-700 dark:bg-rose-950/30 dark:text-rose-300" role="alert">{{ errorMessage() }}</div>
+      }
+
+      <button class="mt-1 inline-flex min-h-11 w-full items-center justify-center rounded-md bg-gradient-to-br from-violet-600 to-violet-700 px-4 py-2 font-extrabold text-white shadow-lg shadow-violet-600/20 transition hover:from-violet-700 hover:to-violet-600 disabled:cursor-not-allowed disabled:opacity-60" type="submit" [disabled]="isLoading()">
+        {{ isLoading() ? 'Creating account...' : 'Register' }}
+      </button>
+    </form>
+
+    <p class="mt-5 text-center text-slate-500 dark:text-violet-200/80">
+      Already have an account?
+      <a class="font-black text-violet-700 no-underline dark:text-violet-300" routerLink="/login">Login</a>
+    </p>
+  </article>
+</section>

@@ -9,7 +9,10 @@ import { ReviewCommentsApi } from '../../data-access/review-comments/review-comm
 import { MovieReviewResponse } from '../../domain/movie-reviews/movie-review.responses';
 import { ReviewCommentResponse } from '../../domain/review-comments/review-comment.responses';
 import { CommentFormComponent } from '../../shared/components/comment-form/comment-form.component';
-import { CommentsListComponent } from '../../shared/components/comments-list/comments-list.component';
+import {
+  CommentsListComponent,
+  ReviewCommentEditSubmitted,
+} from '../../shared/components/comments-list/comments-list.component';
 import { RatingStarsComponent } from '../../shared/components/rating-stars/rating-stars.component';
 import { ReviewStatusBadgeComponent } from '../../shared/components/review-status-badge/review-status-badge.component';
 import { StateMessageComponent } from '../../shared/components/state-message/state-message.component';
@@ -44,6 +47,7 @@ export class MovieReviewDetailsPage implements OnInit {
   protected readonly errorMessage = signal<string | null>(null);
   protected readonly commentErrorMessage = signal<string | null>(null);
   protected readonly isSubmittingComment = signal(false);
+  protected readonly busyCommentId = signal<string | null>(null);
 
   protected readonly canAddComment = computed(
     () => this.review()?.status === 'Published' && this.session.isLoggedIn(),
@@ -67,6 +71,50 @@ export class MovieReviewDetailsPage implements OnInit {
       .subscribe({
         next: (comment) => this.comments.update((comments) => [...comments, comment]),
         error: () => this.commentErrorMessage.set('Comment could not be added. Please try again.'),
+      });
+  }
+
+  protected updateComment(request: ReviewCommentEditSubmitted): void {
+    this.commentErrorMessage.set(null);
+    this.busyCommentId.set(request.commentId);
+
+    this.reviewCommentsApi
+      .update(request.commentId, { content: request.content })
+      .pipe(
+        finalize(() => this.busyCommentId.set(null)),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe({
+        next: (updatedComment) => {
+          this.comments.update((comments) =>
+            comments.map((comment) =>
+              comment.id === updatedComment.id ? updatedComment : comment,
+            ),
+          );
+        },
+        error: () => this.commentErrorMessage.set('Comment could not be updated. Please try again.'),
+      });
+  }
+
+  protected deleteComment(commentId: string): void {
+    if (!window.confirm('Delete this comment?')) {
+      return;
+    }
+
+    this.commentErrorMessage.set(null);
+    this.busyCommentId.set(commentId);
+
+    this.reviewCommentsApi
+      .delete(commentId)
+      .pipe(
+        finalize(() => this.busyCommentId.set(null)),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe({
+        next: () => {
+          this.comments.update((comments) => comments.filter((comment) => comment.id !== commentId));
+        },
+        error: () => this.commentErrorMessage.set('Comment could not be deleted. Please try again.'),
       });
   }
 

@@ -37,6 +37,7 @@ public static class InfrastructureServiceExtensions
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IMovieReviewsRepository, MovieReviewsRepository>();
         services.AddScoped<IReviewCommentsRepository, ReviewCommentsRepository>();
+        services.AddScoped<IReviewCommentsQueryRepository, ReviewCommentsQueryRepository>();
 
         return services;
     }

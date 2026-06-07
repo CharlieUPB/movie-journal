@@ -5,21 +5,19 @@ namespace MovieJournal.Application.ReviewComments.Mappers;
 
 public static class ReviewCommentMapper
 {
-    public static ReviewCommentResponse ToResponse(ReviewComment reviewComment)
+    public static ReviewCommentResponse ToResponse(
+        ReviewComment reviewComment,
+        string ownerName,
+        bool isOwner)
     {
         return new ReviewCommentResponse(
             reviewComment.Id,
             reviewComment.MovieReviewId,
-            reviewComment.UserId,
+            ownerName,
+            isOwner,
             reviewComment.Content,
             reviewComment.CreatedAt,
             reviewComment.UpdatedAt);
     }
 
-    public static IReadOnlyList<ReviewCommentResponse> ToResponseList(IReadOnlyList<ReviewComment> reviewComments)
-    {
-        return reviewComments
-            .Select(ToResponse)
-            .ToList();
-    }
 }

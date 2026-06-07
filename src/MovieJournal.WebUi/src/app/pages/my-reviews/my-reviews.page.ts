@@ -1,3 +1,4 @@
+import { NgClass } from '@angular/common';
 import { ChangeDetectionStrategy, Component, DestroyRef, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router, RouterLink } from '@angular/router';
@@ -12,7 +13,7 @@ type ReviewFilter = 'All' | ReviewStatus;
 
 @Component({
   selector: 'app-my-reviews-page',
-  imports: [RouterLink, ReviewCardComponent, StateMessageComponent],
+  imports: [NgClass, RouterLink, ReviewCardComponent, StateMessageComponent],
   templateUrl: './my-reviews.page.html',
   styleUrl: './my-reviews.page.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

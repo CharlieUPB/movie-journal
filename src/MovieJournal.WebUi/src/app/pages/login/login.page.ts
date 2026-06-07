@@ -10,71 +10,8 @@ import { UsersApi } from '../../data-access/users/users.api';
 @Component({
   selector: 'app-login-page',
   imports: [ReactiveFormsModule, RouterLink],
-  template: `
-    <section class="auth-page">
-      <article class="auth-card">
-        <div class="auth-brand">
-          <span class="auth-logo">MJ</span>
-          <div>
-            <p class="eyebrow">Welcome back</p>
-            <h1>Movie Review Journal</h1>
-          </div>
-        </div>
-
-        <form class="auth-form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
-          <label class="auth-field">
-            <span>Email</span>
-            <input
-              type="email"
-              autocomplete="email"
-              placeholder="you@example.com"
-              formControlName="email"
-              [class.invalid]="showError(email)"
-            />
-          </label>
-          @if (showError(email)) {
-            <p class="field-error">{{ emailError() }}</p>
-          }
-
-          <label class="auth-field">
-            <span>Password</span>
-            <div class="password-control">
-              <input
-                [type]="showPassword() ? 'text' : 'password'"
-                autocomplete="current-password"
-                placeholder="Enter your password"
-                formControlName="password"
-                [class.invalid]="showError(password)"
-              />
-              <button
-                class="password-toggle"
-                type="button"
-                (click)="showPassword.set(!showPassword())"
-              >
-                {{ showPassword() ? 'Hide' : 'Show' }}
-              </button>
-            </div>
-          </label>
-          @if (showError(password)) {
-            <p class="field-error">Password is required.</p>
-          }
-
-          @if (errorMessage()) {
-            <div class="auth-error" role="alert">{{ errorMessage() }}</div>
-          }
-
-          <button class="btn btn-primary auth-submit" type="submit" [disabled]="isLoading()">
-            {{ isLoading() ? 'Logging in...' : 'Login' }}
-          </button>
-        </form>
-
-        <p class="auth-switch">
-          Do not have an account?
-          <a routerLink="/register">Register</a>
-        </p>
-      </article>
-    </section>
-  `,
+  templateUrl: './login.page.html',
+  styleUrl: './login.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LoginPage {

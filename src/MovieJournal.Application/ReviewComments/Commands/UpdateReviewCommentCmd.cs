@@ -4,6 +4,7 @@ using MovieJournal.Application.MovieReviews;
 using MovieJournal.Application.ReviewComments.Mappers;
 using MovieJournal.Application.ReviewComments.Requests;
 using MovieJournal.Application.ReviewComments.Responses;
+using MovieJournal.Application.Users;
 
 namespace MovieJournal.Application.ReviewComments.Commands;
 
@@ -11,13 +12,16 @@ public class UpdateReviewCommentCmd : ICommand<UpdateReviewCommentRequest, Revie
 {
     private readonly IMovieReviewsRepository _movieReviewsRepository;
     private readonly IReviewCommentsRepository _reviewCommentsRepository;
+    private readonly IUserRepository _userRepository;
 
     public UpdateReviewCommentCmd(
         IMovieReviewsRepository movieReviewsRepository,
-        IReviewCommentsRepository reviewCommentsRepository)
+        IReviewCommentsRepository reviewCommentsRepository,
+        IUserRepository userRepository)
     {
         _movieReviewsRepository = movieReviewsRepository;
         _reviewCommentsRepository = reviewCommentsRepository;
+        _userRepository = userRepository;
     }
 
     public async Task<ReviewCommentResponse> Execute(UpdateReviewCommentRequest request)
@@ -46,7 +50,11 @@ public class UpdateReviewCommentCmd : ICommand<UpdateReviewCommentRequest, Revie
         reviewComment.UpdateComment(request.Content);
 
         var updatedReviewComment = await _reviewCommentsRepository.UpdateAsync(reviewComment);
+        var owner = await _userRepository.GetByIdAsync(updatedReviewComment.UserId);
 
-        return ReviewCommentMapper.ToResponse(updatedReviewComment);
+        return ReviewCommentMapper.ToResponse(
+            updatedReviewComment,
+            owner?.DisplayName ?? "Unknown user",
+            true);
     }
 }

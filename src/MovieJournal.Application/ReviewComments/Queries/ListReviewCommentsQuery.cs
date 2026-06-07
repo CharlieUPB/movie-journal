@@ -1,7 +1,6 @@
 using MovieJournal.Application.Common;
 using MovieJournal.Application.Exceptions;
 using MovieJournal.Application.MovieReviews;
-using MovieJournal.Application.ReviewComments.Mappers;
 using MovieJournal.Application.ReviewComments.Requests;
 using MovieJournal.Application.ReviewComments.Responses;
 using MovieJournal.Domain.Enums;
@@ -11,14 +10,14 @@ namespace MovieJournal.Application.ReviewComments.Queries;
 public class ListReviewCommentsQuery : IQuery<ListReviewCommentsRequest, ReviewCommentsListResponse>
 {
     private readonly IMovieReviewsRepository _movieReviewsRepository;
-    private readonly IReviewCommentsRepository _reviewCommentsRepository;
+    private readonly IReviewCommentsQueryRepository _reviewCommentsQueryRepository;
 
     public ListReviewCommentsQuery(
         IMovieReviewsRepository movieReviewsRepository,
-        IReviewCommentsRepository reviewCommentsRepository)
+        IReviewCommentsQueryRepository reviewCommentsQueryRepository)
     {
         _movieReviewsRepository = movieReviewsRepository;
-        _reviewCommentsRepository = reviewCommentsRepository;
+        _reviewCommentsQueryRepository = reviewCommentsQueryRepository;
     }
 
     public async Task<ReviewCommentsListResponse> Execute(ListReviewCommentsRequest request)
@@ -37,11 +36,10 @@ public class ListReviewCommentsQuery : IQuery<ListReviewCommentsRequest, ReviewC
             throw new UseCaseException("You are not allowed to view these review comments");
         }
 
-        var reviewComments = await _reviewCommentsRepository.GetByMovieReviewIdAsync(request.MovieReviewId);
-        var visibleReviewComments = reviewComments
-            .Where(reviewComment => reviewComment.IsDeleted != true)
-            .ToList();
+        var reviewComments = await _reviewCommentsQueryRepository.GetByMovieReviewIdAsync(
+            request.MovieReviewId,
+            request.UserId);
 
-        return new ReviewCommentsListResponse(ReviewCommentMapper.ToResponseList(visibleReviewComments));
+        return new ReviewCommentsListResponse(reviewComments);
     }
 }

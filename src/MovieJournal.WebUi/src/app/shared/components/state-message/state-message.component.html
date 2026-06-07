@@ -1,7 +1,10 @@
-<section class="state-message" [class.error]="kind() === 'error'" [class.loading]="kind() === 'loading'">
-  <p class="state-kind">{{ kind() }}</p>
-  <h2>{{ title() }}</h2>
+<section
+  class="grid gap-1 rounded-lg border bg-white p-5 shadow-soft dark:bg-[#171323] dark:shadow-soft-dark"
+  [ngClass]="kind() === 'error' ? 'border-rose-300 dark:border-rose-800' : 'border-violet-100 dark:border-violet-900/70'"
+>
+  <p class="m-0 text-xs font-black uppercase tracking-wider" [ngClass]="kind() === 'error' ? 'text-rose-600 dark:text-rose-300' : 'text-violet-700 dark:text-violet-300'">{{ kind() }}</p>
+  <h2 class="m-0 text-lg font-black text-slate-950 dark:text-violet-50">{{ title() }}</h2>
   @if (message()) {
-    <p>{{ message() }}</p>
+    <p class="m-0 text-slate-500 dark:text-violet-200/80">{{ message() }}</p>
   }
 </section>

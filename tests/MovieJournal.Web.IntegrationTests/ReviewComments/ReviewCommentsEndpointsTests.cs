@@ -9,14 +9,14 @@ namespace MovieJournal.Web.IntegrationTests.ReviewComments;
 
 public class ReviewCommentsEndpointsTests
 {
-    private static readonly Guid DemoUserId = Guid.Parse("11111111-1111-1111-1111-111111111111");
+    private const string DemoOwnerName = "Demo User";
     private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web);
 
     [Fact]
     public async Task ShouldReturnOkAndCommentsForPublishedReview()
     {
         using var factory = new MovieJournalWebApplicationFactory();
-        using var client = factory.CreateClient();
+        using var client = await factory.CreateAuthenticatedClientAsync();
         var review = await CreatePublishedReviewAsync(client);
         var comment = await CreateCommentAsync(client, review.Id, "This is a visible comment.");
 
@@ -34,7 +34,7 @@ public class ReviewCommentsEndpointsTests
     public async Task ShouldCreateCommentForPublishedReview()
     {
         using var factory = new MovieJournalWebApplicationFactory();
-        using var client = factory.CreateClient();
+        using var client = await factory.CreateAuthenticatedClientAsync();
         var review = await CreatePublishedReviewAsync(client);
 
         var response = await client.PostAsJsonAsync(
@@ -46,14 +46,15 @@ public class ReviewCommentsEndpointsTests
         Assert.NotNull(body);
         Assert.Equal("This comment should be created.", body.Content);
         Assert.Equal(review.Id, body.MovieReviewId);
-        Assert.Equal(DemoUserId, body.UserId);
+        Assert.Equal(DemoOwnerName, body.OwnerName);
+        Assert.True(body.IsOwner);
     }
 
     [Fact]
     public async Task ShouldReturnBadRequestProblemDetailsWhenCommentContentIsInvalid()
     {
         using var factory = new MovieJournalWebApplicationFactory();
-        using var client = factory.CreateClient();
+        using var client = await factory.CreateAuthenticatedClientAsync();
         var review = await CreatePublishedReviewAsync(client);
 
         var response = await client.PostAsJsonAsync(
@@ -71,7 +72,7 @@ public class ReviewCommentsEndpointsTests
     public async Task ShouldReturnBadRequestProblemDetailsWhenReviewIsDraft()
     {
         using var factory = new MovieJournalWebApplicationFactory();
-        using var client = factory.CreateClient();
+        using var client = await factory.CreateAuthenticatedClientAsync();
         var review = await CreateDraftReviewAsync(client);
 
         var response = await client.PostAsJsonAsync(
@@ -89,7 +90,7 @@ public class ReviewCommentsEndpointsTests
     public async Task ShouldUpdateCommentWhenUserIsAuthor()
     {
         using var factory = new MovieJournalWebApplicationFactory();
-        using var client = factory.CreateClient();
+        using var client = await factory.CreateAuthenticatedClientAsync();
         var review = await CreatePublishedReviewAsync(client);
         var comment = await CreateCommentAsync(client, review.Id, "Original comment");
 
@@ -108,7 +109,7 @@ public class ReviewCommentsEndpointsTests
     public async Task ShouldDeleteComment()
     {
         using var factory = new MovieJournalWebApplicationFactory();
-        using var client = factory.CreateClient();
+        using var client = await factory.CreateAuthenticatedClientAsync();
         var review = await CreatePublishedReviewAsync(client);
         var comment = await CreateCommentAsync(client, review.Id, "Comment to delete");
 
@@ -126,7 +127,7 @@ public class ReviewCommentsEndpointsTests
     public async Task ShouldReturnNoContentWhenDeletingSameCommentTwice()
     {
         using var factory = new MovieJournalWebApplicationFactory();
-        using var client = factory.CreateClient();
+        using var client = await factory.CreateAuthenticatedClientAsync();
         var review = await CreatePublishedReviewAsync(client);
         var comment = await CreateCommentAsync(client, review.Id, "Comment to delete twice");
 

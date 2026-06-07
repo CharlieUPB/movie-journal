@@ -1,7 +1,9 @@
+import { NgClass } from '@angular/common';
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 
 @Component({
   selector: 'app-rating-stars-input',
+  imports: [NgClass],
   templateUrl: './rating-stars-input.component.html',
   styleUrl: './rating-stars-input.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

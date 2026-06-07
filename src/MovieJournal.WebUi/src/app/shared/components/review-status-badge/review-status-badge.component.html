@@ -1,3 +1,10 @@
-<span class="status-badge" [class.draft]="status() === 'Draft'" [class.published]="status() === 'Published'" [class.archived]="status() === 'Archived'">
+<span
+  class="inline-flex min-h-7 items-center rounded-md border px-2 py-1 text-sm font-black"
+  [ngClass]="{
+    'border-violet-300 bg-violet-50 text-violet-700 dark:border-violet-600 dark:bg-violet-950/40 dark:text-violet-200': status() === 'Draft',
+    'border-emerald-300 bg-emerald-50 text-emerald-700 dark:border-emerald-600 dark:bg-emerald-950/30 dark:text-emerald-200': status() === 'Published',
+    'border-slate-300 bg-slate-100 text-slate-600 dark:border-violet-900 dark:bg-[#211a33] dark:text-violet-200/80': status() === 'Archived',
+  }"
+>
   {{ status() }}
 </span>

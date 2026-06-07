@@ -3,9 +3,11 @@ using MovieJournal.Application.MovieReviews.Requests;
 using MovieJournal.Application.ReviewComments.Commands;
 using MovieJournal.Application.ReviewComments.Queries;
 using MovieJournal.Application.ReviewComments.Requests;
+using MovieJournal.Application.ReviewComments.Responses;
 using MovieJournal.Application.UnitTests.MovieReviews;
 using MovieJournal.Application.UnitTests.MovieReviews.Fakes;
 using MovieJournal.Application.UnitTests.ReviewComments.Fakes;
+using MovieJournal.Application.UnitTests.Users.Fakes;
 using MovieJournal.Domain.Entities;
 using MovieJournal.Domain.Enums;
 using MovieJournal.Domain.Exceptions;
@@ -21,15 +23,18 @@ public class ReviewCommentsUseCasesTests
         var movieReview = MovieReviewTestData.CreateMovieReview(status: ReviewStatus.Published);
         var movieReviewsRepository = new FakeMovieReviewsRepository();
         var reviewCommentsRepository = new FakeReviewCommentsRepository();
+        var userRepository = new FakeUserRepository();
         movieReviewsRepository.Reviews.Add(movieReview);
-        var command = new AddReviewCommentCmd(movieReviewsRepository, reviewCommentsRepository);
+        userRepository.Users.Add(CreateUser(userId, "Carlos"));
+        var command = new AddReviewCommentCmd(movieReviewsRepository, reviewCommentsRepository, userRepository);
         var request = new AddReviewCommentRequest(movieReview.Id, userId, "Great review");
 
         var response = await command.Execute(request);
 
         Assert.Equal(1, reviewCommentsRepository.CreateAsyncCallCount);
         Assert.Equal(movieReview.Id, response.MovieReviewId);
-        Assert.Equal(userId, response.UserId);
+        Assert.Equal("Carlos", response.OwnerName);
+        Assert.True(response.IsOwner);
         Assert.Equal("Great review", response.Content);
     }
 
@@ -38,7 +43,8 @@ public class ReviewCommentsUseCasesTests
     {
         var movieReviewsRepository = new FakeMovieReviewsRepository();
         var reviewCommentsRepository = new FakeReviewCommentsRepository();
-        var command = new AddReviewCommentCmd(movieReviewsRepository, reviewCommentsRepository);
+        var userRepository = new FakeUserRepository();
+        var command = new AddReviewCommentCmd(movieReviewsRepository, reviewCommentsRepository, userRepository);
         var request = new AddReviewCommentRequest(Guid.NewGuid(), Guid.NewGuid(), "Great review");
 
         var exception = await Assert.ThrowsAsync<UseCaseException>(() => command.Execute(request));
@@ -53,8 +59,9 @@ public class ReviewCommentsUseCasesTests
         var movieReview = MovieReviewTestData.CreateMovieReview(status: ReviewStatus.Draft);
         var movieReviewsRepository = new FakeMovieReviewsRepository();
         var reviewCommentsRepository = new FakeReviewCommentsRepository();
+        var userRepository = new FakeUserRepository();
         movieReviewsRepository.Reviews.Add(movieReview);
-        var command = new AddReviewCommentCmd(movieReviewsRepository, reviewCommentsRepository);
+        var command = new AddReviewCommentCmd(movieReviewsRepository, reviewCommentsRepository, userRepository);
         var request = new AddReviewCommentRequest(movieReview.Id, Guid.NewGuid(), "Great review");
 
         var exception = await Assert.ThrowsAsync<DomainException>(() => command.Execute(request));
@@ -69,8 +76,9 @@ public class ReviewCommentsUseCasesTests
         var movieReview = MovieReviewTestData.CreateMovieReview(status: ReviewStatus.Published);
         var movieReviewsRepository = new FakeMovieReviewsRepository();
         var reviewCommentsRepository = new FakeReviewCommentsRepository();
+        var userRepository = new FakeUserRepository();
         movieReviewsRepository.Reviews.Add(movieReview);
-        var command = new AddReviewCommentCmd(movieReviewsRepository, reviewCommentsRepository);
+        var command = new AddReviewCommentCmd(movieReviewsRepository, reviewCommentsRepository, userRepository);
         var request = new AddReviewCommentRequest(movieReview.Id, Guid.NewGuid(), "  ");
 
         var exception = await Assert.ThrowsAsync<DomainException>(() => command.Execute(request));
@@ -83,18 +91,26 @@ public class ReviewCommentsUseCasesTests
     public async Task ShouldReturnCommentsWhenReviewIsPublishedAndUserIsAnonymous()
     {
         var movieReview = MovieReviewTestData.CreateMovieReview(status: ReviewStatus.Published);
-        var reviewComment = CreateReviewComment(movieReview.Id, Guid.NewGuid(), "First comment");
+        var commentOwnerId = Guid.NewGuid();
+        var reviewComment = CreateReviewComment(movieReview.Id, commentOwnerId, "First comment");
         var movieReviewsRepository = new FakeMovieReviewsRepository();
-        var reviewCommentsRepository = new FakeReviewCommentsRepository();
+        var reviewCommentsQueryRepository = new FakeReviewCommentsQueryRepository();
         movieReviewsRepository.Reviews.Add(movieReview);
-        reviewCommentsRepository.Comments.Add(reviewComment);
-        var query = new ListReviewCommentsQuery(movieReviewsRepository, reviewCommentsRepository);
+        reviewCommentsQueryRepository.Comments.Add(CreateReviewCommentResponse(
+            reviewComment.Id,
+            movieReview.Id,
+            "Maria",
+            false,
+            "First comment"));
+        var query = new ListReviewCommentsQuery(movieReviewsRepository, reviewCommentsQueryRepository);
         var request = new ListReviewCommentsRequest(movieReview.Id, null);
 
         var response = await query.Execute(request);
 
         Assert.Single(response.Comments);
         Assert.Equal(reviewComment.Id, response.Comments[0].Id);
+        Assert.Equal("Maria", response.Comments[0].OwnerName);
+        Assert.False(response.Comments[0].IsOwner);
         Assert.Equal("First comment", response.Comments[0].Content);
     }
 
@@ -103,15 +119,15 @@ public class ReviewCommentsUseCasesTests
     {
         var movieReview = MovieReviewTestData.CreateMovieReview(status: ReviewStatus.Draft);
         var movieReviewsRepository = new FakeMovieReviewsRepository();
-        var reviewCommentsRepository = new FakeReviewCommentsRepository();
+        var reviewCommentsQueryRepository = new FakeReviewCommentsQueryRepository();
         movieReviewsRepository.Reviews.Add(movieReview);
-        var query = new ListReviewCommentsQuery(movieReviewsRepository, reviewCommentsRepository);
+        var query = new ListReviewCommentsQuery(movieReviewsRepository, reviewCommentsQueryRepository);
         var request = new ListReviewCommentsRequest(movieReview.Id, Guid.NewGuid());
 
         var exception = await Assert.ThrowsAsync<UseCaseException>(() => query.Execute(request));
 
         Assert.Equal("You are not allowed to view these review comments", exception.Message);
-        Assert.Equal(0, reviewCommentsRepository.GetByMovieReviewIdAsyncCallCount);
+        Assert.Equal(0, reviewCommentsQueryRepository.GetByMovieReviewIdAsyncCallCount);
     }
 
     [Fact]
@@ -122,14 +138,18 @@ public class ReviewCommentsUseCasesTests
         var reviewComment = CreateReviewComment(movieReview.Id, authorId, "Original comment");
         var movieReviewsRepository = new FakeMovieReviewsRepository();
         var reviewCommentsRepository = new FakeReviewCommentsRepository();
+        var userRepository = new FakeUserRepository();
         movieReviewsRepository.Reviews.Add(movieReview);
         reviewCommentsRepository.Comments.Add(reviewComment);
-        var command = new UpdateReviewCommentCmd(movieReviewsRepository, reviewCommentsRepository);
+        userRepository.Users.Add(CreateUser(authorId, "Carlos"));
+        var command = new UpdateReviewCommentCmd(movieReviewsRepository, reviewCommentsRepository, userRepository);
         var request = new UpdateReviewCommentRequest(reviewComment.Id, authorId, "Updated comment");
 
         var response = await command.Execute(request);
 
         Assert.Equal(1, reviewCommentsRepository.UpdateAsyncCallCount);
+        Assert.Equal("Carlos", response.OwnerName);
+        Assert.True(response.IsOwner);
         Assert.Equal("Updated comment", response.Content);
         Assert.Equal("Updated comment", reviewComment.Content);
     }
@@ -141,9 +161,10 @@ public class ReviewCommentsUseCasesTests
         var reviewComment = CreateReviewComment(movieReview.Id, Guid.NewGuid(), "Original comment");
         var movieReviewsRepository = new FakeMovieReviewsRepository();
         var reviewCommentsRepository = new FakeReviewCommentsRepository();
+        var userRepository = new FakeUserRepository();
         movieReviewsRepository.Reviews.Add(movieReview);
         reviewCommentsRepository.Comments.Add(reviewComment);
-        var command = new UpdateReviewCommentCmd(movieReviewsRepository, reviewCommentsRepository);
+        var command = new UpdateReviewCommentCmd(movieReviewsRepository, reviewCommentsRepository, userRepository);
         var request = new UpdateReviewCommentRequest(reviewComment.Id, Guid.NewGuid(), "Updated comment");
 
         var exception = await Assert.ThrowsAsync<UseCaseException>(() => command.Execute(request));
@@ -199,5 +220,34 @@ public class ReviewCommentsUseCasesTests
             DateTime.UtcNow,
             null,
             isDeleted);
+    }
+
+    private static User CreateUser(Guid id, string displayName)
+    {
+        return User.Rebuild(
+            id,
+            displayName,
+            $"{displayName.ToLowerInvariant()}@example.com",
+            "hashed-password",
+            DateTime.UtcNow,
+            null,
+            false);
+    }
+
+    private static ReviewCommentResponse CreateReviewCommentResponse(
+        Guid id,
+        Guid movieReviewId,
+        string ownerName,
+        bool isOwner,
+        string content)
+    {
+        return new ReviewCommentResponse(
+            id,
+            movieReviewId,
+            ownerName,
+            isOwner,
+            content,
+            DateTime.UtcNow,
+            null);
     }
 }
