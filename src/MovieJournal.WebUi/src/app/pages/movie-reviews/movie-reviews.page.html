@@ -1,0 +1,36 @@
+<section class="reviews-page">
+  <header class="page-header">
+    <div>
+      <p class="eyebrow">Published Reviews</p>
+      <h1>Discover thoughtful takes from movie lovers.</h1>
+    </div>
+    <a class="btn btn-primary" routerLink="/movie-review/create">Create Review</a>
+  </header>
+
+  <label class="search-field">
+    <span>Search reviews</span>
+    <input
+      #searchInput
+      type="search"
+      placeholder="Search by movie title..."
+      [value]="searchTerm()"
+      (input)="updateSearch(searchInput.value)"
+    />
+  </label>
+
+  @if (isLoading()) {
+    <app-state-message kind="loading" title="Loading reviews" message="Fetching published movie reviews." />
+  } @else if (errorMessage()) {
+    <app-state-message kind="error" title="Reviews unavailable" [message]="errorMessage() ?? ''" />
+  } @else if (reviews().length === 0) {
+    <app-state-message kind="empty" title="No published reviews yet" message="Published reviews will show up here." />
+  } @else if (filteredReviews().length === 0) {
+    <app-state-message kind="empty" title="No matching reviews" message="Try a different movie title." />
+  } @else {
+    <section class="reviews-grid" aria-label="Published movie reviews">
+      @for (review of filteredReviews(); track review.id) {
+        <app-review-card [review]="review" (view)="viewReview($event)" />
+      }
+    </section>
+  }
+</section>

@@ -1,0 +1,39 @@
+.my-reviews-page {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.filter-button {
+  min-height: 40px;
+  padding: 0.55rem 0.9rem;
+  color: var(--color-text-muted);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.filter-button.active {
+  color: #ffffff;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-strong));
+  border-color: transparent;
+}
+
+.reviews-stack {
+  display: grid;
+  gap: 1rem;
+}
+
+@media (max-width: 720px) {
+  .filter-bar {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

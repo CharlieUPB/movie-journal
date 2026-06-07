@@ -1,0 +1,22 @@
+.rating-stars {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.12rem;
+  white-space: nowrap;
+}
+
+.star {
+  color: color-mix(in srgb, var(--color-text-muted) 36%, transparent);
+  font-size: 1.2rem;
+  line-height: 1;
+}
+
+.star.filled {
+  color: var(--color-star);
+}
+
+.rating-value {
+  margin-left: 0.35rem;
+  color: var(--color-text);
+  font-weight: 700;
+}

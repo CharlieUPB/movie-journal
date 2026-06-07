@@ -1,0 +1,15 @@
+<div class="rating-input" role="radiogroup" aria-label="Review rating">
+  @for (star of stars; track star) {
+    <button
+      type="button"
+      class="star-button"
+      [class.filled]="isFilled(star)"
+      [disabled]="disabled()"
+      [attr.aria-checked]="rating() === star"
+      role="radio"
+      (click)="selectRating(star)"
+    >
+      ★
+    </button>
+  }
+</div>

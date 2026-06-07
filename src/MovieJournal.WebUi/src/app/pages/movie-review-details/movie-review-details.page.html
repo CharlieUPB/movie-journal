@@ -1,0 +1,52 @@
+<section class="details-page">
+  <a class="text-link" routerLink="/movie-reviews">Back to reviews</a>
+
+  @if (isLoadingReview()) {
+    <app-state-message kind="loading" title="Loading review" message="Fetching movie review details." />
+  } @else if (errorMessage()) {
+    <app-state-message kind="error" title="Review unavailable" [message]="errorMessage() ?? ''" />
+  } @else if (review(); as selectedReview) {
+    <article class="review-detail">
+      <header class="detail-header">
+        <div>
+          <h1>
+            {{ selectedReview.movieTitle }}
+            @if (selectedReview.movieReleaseYear) {
+              <span>({{ selectedReview.movieReleaseYear }})</span>
+            }
+          </h1>
+          <app-review-status-badge [status]="selectedReview.status" />
+        </div>
+        <app-rating-stars [rating]="selectedReview.reviewRating" />
+      </header>
+
+      <p class="review-date">Reviewed on {{ selectedReview.createdAt | date: 'MMM d, y' }}</p>
+      <h2>{{ selectedReview.reviewTitle }}</h2>
+      <p class="review-content">{{ selectedReview.reviewContent }}</p>
+    </article>
+
+    <section class="comments-section">
+      @if (isLoadingComments()) {
+        <app-state-message kind="loading" title="Loading comments" />
+      } @else {
+        <app-comments-list [comments]="comments()" />
+      }
+
+      @if (commentErrorMessage()) {
+        <app-state-message kind="error" title="Comment issue" [message]="commentErrorMessage() ?? ''" />
+      }
+
+      @if (canAddComment()) {
+        <app-comment-form [isSubmitting]="isSubmittingComment()" (commentSubmitted)="addComment($event)" />
+      } @else if (selectedReview.status === 'Published') {
+        <aside class="login-prompt">
+          <div>
+            <strong>Log in to add a comment.</strong>
+            <p>Join the conversation on this review.</p>
+          </div>
+          <a class="btn btn-ghost" routerLink="/login">Login</a>
+        </aside>
+      }
+    </section>
+  }
+</section>

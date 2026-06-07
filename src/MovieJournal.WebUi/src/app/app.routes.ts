@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { authGuard } from './core/auth/auth.guard';
+import { authGuard, guestGuard } from './core/auth/auth.guard';
 
 export const routes: Routes = [
   {
@@ -9,11 +9,19 @@ export const routes: Routes = [
   },
   {
     path: 'login',
+    canActivate: [guestGuard],
     loadComponent: () => import('./pages/login/login.page').then((m) => m.LoginPage),
   },
   {
     path: 'register',
+    canActivate: [guestGuard],
     loadComponent: () => import('./pages/register/register.page').then((m) => m.RegisterPage),
+  },
+  {
+    path: 'movie-reviews/my',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./pages/my-reviews/my-reviews.page').then((m) => m.MyReviewsPage),
   },
   {
     path: 'movie-reviews',
@@ -29,18 +37,18 @@ export const routes: Routes = [
       ),
   },
   {
-    path: 'movie-review/:id',
-    loadComponent: () =>
-      import('./pages/movie-review-details/movie-review-details.page').then(
-        (m) => m.MovieReviewDetailsPage,
-      ),
-  },
-  {
     path: 'movie-review/:id/edit',
     canActivate: [authGuard],
     loadComponent: () =>
       import('./pages/edit-movie-review/edit-movie-review.page').then(
         (m) => m.EditMovieReviewPage,
+      ),
+  },
+  {
+    path: 'movie-review/:id',
+    loadComponent: () =>
+      import('./pages/movie-review-details/movie-review-details.page').then(
+        (m) => m.MovieReviewDetailsPage,
       ),
   },
   {

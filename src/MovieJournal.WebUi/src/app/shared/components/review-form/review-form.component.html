@@ -1,0 +1,108 @@
+<form class="review-form" [formGroup]="form" novalidate>
+  <div class="form-grid">
+    <label class="form-field">
+      <span>Movie title</span>
+      <input
+        type="text"
+        autocomplete="off"
+        placeholder="e.g., Inception"
+        formControlName="movieTitle"
+        [class.invalid]="showError(movieTitle)"
+      />
+    </label>
+
+    <label class="form-field">
+      <span>Release year <small>(optional)</small></span>
+      <input
+        type="number"
+        min="1888"
+        [max]="currentYear"
+        placeholder="e.g., 2010"
+        formControlName="movieReleaseYear"
+        [class.invalid]="showError(movieReleaseYear)"
+      />
+    </label>
+
+    <label class="form-field full">
+      <span>Review title</span>
+      <input
+        type="text"
+        autocomplete="off"
+        placeholder="A memorable headline"
+        formControlName="reviewTitle"
+        [class.invalid]="showError(reviewTitle)"
+      />
+    </label>
+
+    <label class="form-field full">
+      <span>Your review</span>
+      <textarea
+        rows="8"
+        placeholder="Share your thoughts about the movie..."
+        formControlName="reviewContent"
+        [class.invalid]="showError(reviewContent)"
+      ></textarea>
+    </label>
+
+    <fieldset class="rating-field full">
+      <legend>Rating</legend>
+      <app-rating-stars-input
+        [rating]="reviewRating.value"
+        [disabled]="readOnly() || isSubmitting()"
+        (ratingChange)="setRating($event)"
+      />
+    </fieldset>
+  </div>
+
+  <div class="validation-summary">
+    @if (showError(movieTitle)) {
+      <p>Movie title is required.</p>
+    }
+    @if (showError(movieReleaseYear)) {
+      <p>{{ releaseYearError() }}</p>
+    }
+    @if (showError(reviewTitle)) {
+      <p>Review title is required.</p>
+    }
+    @if (showError(reviewContent)) {
+      @if (reviewContent.hasError('required')) {
+        <p>Review content is required.</p>
+      } @else {
+        <p>Review content must be at least 50 characters.</p>
+      }
+    }
+    @if (showError(reviewRating)) {
+      <p>Choose a rating from 1 to 5.</p>
+    }
+  </div>
+
+  <footer class="form-actions">
+    @if (mode() === 'create') {
+      <button
+        type="button"
+        class="btn btn-ghost"
+        [disabled]="readOnly() || isSubmitting()"
+        (click)="submit('draft')"
+      >
+        {{ isSubmitting() ? 'Saving...' : 'Save as Draft' }}
+      </button>
+      <button
+        type="button"
+        class="btn btn-primary"
+        [disabled]="readOnly() || isSubmitting()"
+        (click)="submit('publish')"
+      >
+        {{ isSubmitting() ? 'Publishing...' : 'Save and Publish' }}
+      </button>
+    } @else {
+      <button
+        type="button"
+        class="btn btn-primary"
+        [disabled]="readOnly() || isSubmitting()"
+        (click)="submit('save')"
+      >
+        {{ isSubmitting() ? 'Saving...' : submitLabel() }}
+      </button>
+    }
+  </footer>
+</form>

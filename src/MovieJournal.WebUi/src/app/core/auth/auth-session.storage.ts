@@ -40,7 +40,7 @@ export class AuthSessionStorage {
   }
 
   isLoggedIn(): boolean {
-    return !!this.getToken();
+    return !!this.getToken() && this.user() !== null;
   }
 
   clearSession(): void {

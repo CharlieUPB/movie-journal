@@ -1,0 +1,22 @@
+<section class="comments-list">
+  <h2>Comments ({{ comments().length }})</h2>
+
+  @if (comments().length === 0) {
+    <p class="muted">No comments yet.</p>
+  } @else {
+    <div class="comment-stack">
+      @for (comment of comments(); track comment.id) {
+        <article class="comment">
+          <span class="avatar">{{ userInitial() }}</span>
+          <div>
+            <header>
+              <strong>{{ userLabel(comment.userId) }}</strong>
+              <span>{{ comment.createdAt | date: 'MMM d, y' }}</span>
+            </header>
+            <p>{{ comment.content }}</p>
+          </div>
+        </article>
+      }
+    </div>
+  }
+</section>

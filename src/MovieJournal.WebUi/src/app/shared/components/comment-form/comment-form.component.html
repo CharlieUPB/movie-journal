@@ -1,0 +1,24 @@
+<form class="comment-form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+  <label>
+    <span>Add a comment</span>
+    <textarea formControlName="content" rows="3" maxlength="500" placeholder="Share your thoughts..."></textarea>
+  </label>
+
+  <div class="comment-form-footer">
+    @if (showError()) {
+      <p class="field-error">
+        @if (content.hasError('required')) {
+          Comment is required.
+        } @else {
+          Comments can be 500 characters max.
+        }
+      </p>
+    } @else {
+      <span>{{ content.value.length }} / 500</span>
+    }
+
+    <button type="submit" class="btn btn-primary" [disabled]="isSubmitting()">
+      {{ isSubmitting() ? 'Submitting...' : 'Submit Comment' }}
+    </button>
+  </div>
+</form>

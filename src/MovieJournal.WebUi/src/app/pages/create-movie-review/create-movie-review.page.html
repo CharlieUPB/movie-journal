@@ -1,0 +1,23 @@
+<section class="review-editor-page">
+  <header class="page-header">
+    <div>
+      <p class="eyebrow">Create Review</p>
+      <h1>Start a movie review.</h1>
+      <p class="page-copy">Save it privately as a draft or publish it when it is ready.</p>
+    </div>
+    <a class="btn btn-ghost" routerLink="/movie-reviews/my">My Reviews</a>
+  </header>
+
+  @if (errorMessage()) {
+    <app-state-message kind="error" title="Review could not be saved" [message]="errorMessage() ?? ''" />
+  }
+
+  <section class="editor-card">
+    <app-review-form
+      mode="create"
+      [isSubmitting]="isSaving()"
+      (saveDraft)="saveDraft($event)"
+      (saveAndPublish)="saveAndPublish($event)"
+    />
+  </section>
+</section>

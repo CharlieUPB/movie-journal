@@ -1,0 +1,47 @@
+<article class="review-card" tabindex="0" (click)="open()" (keydown.enter)="open()">
+  <div class="review-topline">
+    <div>
+      <h2>
+        {{ review().movieTitle }}
+        @if (review().movieReleaseYear) {
+          <span>({{ review().movieReleaseYear }})</span>
+        }
+      </h2>
+      <app-review-status-badge [status]="review().status" />
+    </div>
+    <app-rating-stars [rating]="review().reviewRating" />
+  </div>
+
+  <h3>{{ review().reviewTitle }}</h3>
+  <p class="review-preview">{{ contentPreview() }}</p>
+
+  <footer>
+    <span>{{ review().createdAt | date: 'MMM d, y' }}</span>
+
+    @if (showActions()) {
+      <div class="review-actions">
+        <button type="button" class="btn btn-ghost" [disabled]="actionDisabled()" (click)="$event.stopPropagation(); view.emit(review().id)">
+          View
+        </button>
+        @if (review().status !== 'Archived') {
+          <button type="button" class="btn btn-ghost" [disabled]="actionDisabled()" (click)="$event.stopPropagation(); edit.emit(review().id)">
+            Edit
+          </button>
+        }
+        @if (review().status === 'Draft') {
+          <button type="button" class="btn btn-primary" [disabled]="actionDisabled()" (click)="$event.stopPropagation(); publish.emit(review().id)">
+            Publish
+          </button>
+        }
+        @if (review().status !== 'Archived') {
+          <button type="button" class="btn btn-ghost" [disabled]="actionDisabled()" (click)="$event.stopPropagation(); archive.emit(review().id)">
+            Archive
+          </button>
+        }
+        <button type="button" class="btn btn-danger" [disabled]="actionDisabled()" (click)="$event.stopPropagation(); remove.emit(review().id)">
+          Delete
+        </button>
+      </div>
+    }
+  </footer>
+</article>

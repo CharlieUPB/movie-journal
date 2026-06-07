@@ -1,0 +1,45 @@
+<section class="my-reviews-page">
+  <header class="page-header">
+    <div>
+      <p class="eyebrow">My Reviews</p>
+      <h1>Manage your private, published, and archived reviews.</h1>
+    </div>
+    <a class="btn btn-primary" routerLink="/movie-review/create">Create Review</a>
+  </header>
+
+  <div class="filter-bar" aria-label="Review status filters">
+    @for (filter of filters; track filter) {
+      <button
+        type="button"
+        class="filter-button"
+        [class.active]="selectedFilter() === filter"
+        (click)="selectFilter(filter)"
+      >
+        {{ filter }}
+      </button>
+    }
+  </div>
+
+  @if (isLoading()) {
+    <app-state-message kind="loading" title="Loading your reviews" />
+  } @else if (errorMessage()) {
+    <app-state-message kind="error" title="Reviews unavailable" [message]="errorMessage() ?? ''" />
+  } @else if (reviews().length === 0) {
+    <app-state-message kind="empty" title="No reviews found" message="Create a review or change the selected status filter." />
+  } @else {
+    <section class="reviews-stack" aria-label="My movie reviews">
+      @for (review of reviews(); track review.id) {
+        <app-review-card
+          [review]="review"
+          [showActions]="true"
+          [actionDisabled]="actionReviewId() === review.id"
+          (view)="viewReview($event)"
+          (edit)="editReview($event)"
+          (publish)="publishReview($event)"
+          (archive)="archiveReview($event)"
+          (remove)="deleteReview($event)"
+        />
+      }
+    </section>
+  }
+</section>

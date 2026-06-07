@@ -1,0 +1,62 @@
+<section class="review-editor-page">
+  <a class="text-link" routerLink="/movie-reviews/my">Back to My Reviews</a>
+
+  @if (isLoading()) {
+    <app-state-message kind="loading" title="Loading review" message="Fetching your movie review." />
+  } @else if (errorMessage() && !review()) {
+    <app-state-message kind="error" title="Review could not be loaded" [message]="errorMessage() ?? ''" />
+  } @else if (!review()) {
+    <app-state-message kind="empty" title="Review not found" message="This review could not be loaded." />
+  } @else {
+    @if (review(); as selectedReview) {
+      <header class="page-header">
+        <div>
+          <p class="eyebrow">Edit Review</p>
+          <h1>{{ selectedReview.movieTitle }}</h1>
+          <div class="review-meta">
+            <app-review-status-badge [status]="selectedReview.status" />
+            @if (successMessage()) {
+              <span class="success-message">{{ successMessage() }}</span>
+            }
+          </div>
+        </div>
+
+        <div class="header-actions">
+          <a class="btn btn-ghost" [routerLink]="['/movie-review', selectedReview.id]">View</a>
+          @if (selectedReview.status === 'Draft') {
+            <button type="button" class="btn btn-primary" [disabled]="isBusy()" (click)="publishReview()">
+              {{ actionName() === 'Publishing' ? 'Publishing...' : 'Publish' }}
+            </button>
+          }
+          @if (selectedReview.status !== 'Archived') {
+            <button type="button" class="btn btn-ghost" [disabled]="isBusy()" (click)="archiveReview()">
+              {{ actionName() === 'Archiving' ? 'Archiving...' : 'Archive' }}
+            </button>
+          }
+          <button type="button" class="btn btn-danger" [disabled]="isBusy()" (click)="deleteReview()">
+            {{ actionName() === 'Deleting' ? 'Deleting...' : 'Delete' }}
+          </button>
+        </div>
+      </header>
+
+      @if (isArchived()) {
+        <app-state-message kind="empty" title="Archived reviews are read-only" message="This review cannot be edited while archived." />
+      }
+
+      @if (errorMessage()) {
+        <app-state-message kind="error" title="Review action failed" [message]="errorMessage() ?? ''" />
+      }
+
+      <section class="editor-card">
+        <app-review-form
+          mode="edit"
+          submitLabel="Save changes"
+          [initialValue]="formValue()"
+          [readOnly]="isArchived()"
+          [isSubmitting]="isSaving()"
+          (submitReview)="saveReview($event)"
+        />
+      </section>
+    }
+  }
+</section>

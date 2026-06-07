@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthSessionStorage } from '../auth/auth-session.storage';
 
 @Component({
@@ -13,9 +13,21 @@ import { AuthSessionStorage } from '../auth/auth-session.storage';
       </a>
 
       <nav class="nav-links" aria-label="Primary navigation">
-        <a routerLink="/movie-reviews" routerLinkActive="active">Published Reviews</a>
+        <a
+          routerLink="/movie-reviews"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
+          Published Reviews
+        </a>
         @if (session.isLoggedIn()) {
-          <a routerLink="/movie-reviews" routerLinkActive="active">My Reviews</a>
+          <a
+            routerLink="/movie-reviews/my"
+            routerLinkActive="active"
+            [routerLinkActiveOptions]="{ exact: true }"
+          >
+            My Reviews
+          </a>
           <a class="btn btn-primary" routerLink="/movie-review/create">Create Review</a>
           <button class="btn btn-ghost" type="button" (click)="logout()">Logout</button>
         } @else {
@@ -29,8 +41,10 @@ import { AuthSessionStorage } from '../auth/auth-session.storage';
 })
 export class NavbarComponent {
   protected readonly session = inject(AuthSessionStorage);
+  private readonly router = inject(Router);
 
   logout(): void {
     this.session.clearSession();
+    void this.router.navigateByUrl('/movie-reviews');
   }
 }

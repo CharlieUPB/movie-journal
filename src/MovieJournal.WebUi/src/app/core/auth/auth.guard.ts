@@ -8,3 +8,10 @@ export const authGuard: CanActivateFn = () => {
 
   return session.isLoggedIn() ? true : router.createUrlTree(['/login']);
 };
+
+export const guestGuard: CanActivateFn = () => {
+  const session = inject(AuthSessionStorage);
+  const router = inject(Router);
+
+  return session.isLoggedIn() ? router.createUrlTree(['/movie-reviews/my']) : true;
+};
