@@ -7,8 +7,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services
     .AddApplicationServices()
     .AddRepositories()
+    .AddInfrastructureSecurity()
     .AddPersistence(builder.Configuration)
-    .AddWebServices()
+    .AddWebServices(builder.Configuration)
     .AddControllers();
 
 builder.Services.AddOpenApi();
@@ -18,6 +19,8 @@ var app = builder.Build();
 await app.InitializeDatabaseAsync();
 
 app.UseExceptionHandler(options => { });
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapOpenApi();
 

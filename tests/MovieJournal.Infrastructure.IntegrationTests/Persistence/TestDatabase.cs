@@ -6,6 +6,8 @@ using MovieJournal.Infrastructure.Persistence.Connection;
 using MovieJournal.Infrastructure.Persistence.Initializer;
 using MovieJournal.Infrastructure.Persistence.MovieReviews;
 using MovieJournal.Infrastructure.Persistence.ReviewComments;
+using MovieJournal.Infrastructure.Persistence.Users;
+using MovieJournal.Infrastructure.Security;
 
 namespace MovieJournal.Infrastructure.IntegrationTests.Persistence;
 
@@ -21,12 +23,14 @@ internal sealed class TestDatabase : IDisposable
     {
         DatabasePath = databasePath;
         _connectionFactory = new SqliteConnectionFactory($"Data Source={databasePath};Pooling=False");
+        UserRepository = new UserRepository(_connectionFactory);
         Repository = new MovieReviewsRepository(_connectionFactory);
         ReviewCommentsRepository = new ReviewCommentsRepository(_connectionFactory);
-        Initializer = new SqliteDatabaseInitializer(_connectionFactory);
+        Initializer = new SqliteDatabaseInitializer(_connectionFactory, new PasswordHasher());
     }
 
     public string DatabasePath { get; }
+    public UserRepository UserRepository { get; }
     public MovieReviewsRepository Repository { get; }
     public ReviewCommentsRepository ReviewCommentsRepository { get; }
     public SqliteDatabaseInitializer Initializer { get; }

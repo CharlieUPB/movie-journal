@@ -3,6 +3,7 @@ using MovieJournal.Application.MovieReviews.Commands;
 using MovieJournal.Application.MovieReviews.Queries;
 using MovieJournal.Application.ReviewComments.Commands;
 using MovieJournal.Application.ReviewComments.Queries;
+using MovieJournal.Application.Users.Commands;
 
 namespace MovieJournal.Application;
 
@@ -15,6 +16,9 @@ public static class ApplicationServiceExtensions
         services.AddScoped<DeleteMovieReviewCmd>();
         services.AddScoped<PublishMovieReviewCmd>();
         services.AddScoped<ArchiveMovieReviewCmd>();
+
+        services.AddScoped<RegisterUserCmd>();
+        services.AddScoped<LoginUserCmd>();
 
         services.AddScoped<AddReviewCommentCmd>();
         services.AddScoped<UpdateReviewCommentCmd>();

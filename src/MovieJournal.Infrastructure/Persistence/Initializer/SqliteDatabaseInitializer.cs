@@ -1,4 +1,5 @@
-﻿using MovieJournal.Domain.Enums;
+using MovieJournal.Application.Security;
+using MovieJournal.Domain.Enums;
 using MovieJournal.Infrastructure.Persistence.Connection;
 using System.Data;
 
@@ -7,9 +8,14 @@ namespace MovieJournal.Infrastructure.Persistence.Initializer;
 public class SqliteDatabaseInitializer : IDatabaseInitializer
 {
     private readonly ISqlConnectionFactory _connectionFactory;
-    public SqliteDatabaseInitializer(ISqlConnectionFactory sqlConnectionFactory)
+    private readonly IPasswordHasher _passwordHasher;
+
+    public SqliteDatabaseInitializer(
+        ISqlConnectionFactory sqlConnectionFactory,
+        IPasswordHasher passwordHasher)
     {
         _connectionFactory = sqlConnectionFactory;
+        _passwordHasher = passwordHasher;
     }
 
     public Task InitializeAsync()
@@ -17,7 +23,7 @@ public class SqliteDatabaseInitializer : IDatabaseInitializer
         using var connection = _connectionFactory.GetOpenConnection();
 
         CreateTables(connection);
-        SeedData(connection);
+        SeedData(connection, _passwordHasher);
 
         return Task.CompletedTask;
     }
@@ -68,7 +74,7 @@ public class SqliteDatabaseInitializer : IDatabaseInitializer
             """);
     }
 
-    private static void SeedData(IDbConnection connection)
+    private static void SeedData(IDbConnection connection, IPasswordHasher passwordHasher)
     {
         if (HasData(connection, "users"))
         {
@@ -76,8 +82,8 @@ public class SqliteDatabaseInitializer : IDatabaseInitializer
         }
 
         var now = DateTime.UtcNow.ToString("O");
-
         var demoUserId = "11111111-1111-1111-1111-111111111111";
+        var demoPasswordHash = passwordHasher.HashPassword("Demo123!");
 
         Execute(connection, $"""
             INSERT INTO users (
@@ -93,7 +99,7 @@ public class SqliteDatabaseInitializer : IDatabaseInitializer
                 '{demoUserId}',
                 'Demo User',
                 'demo@moviejournal.com',
-                'demo-password-hash',
+                '{demoPasswordHash}',
                 '{now}',
                 0
             );
