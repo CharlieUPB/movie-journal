@@ -1,14 +1,14 @@
 <Solution>
   <Folder Name="/src/">
-    <Project Path="MovieJournal.Infrastructure/MovieJournal.Infrastructure.csproj" Id="bf44b3b8-b17a-42cd-b7d6-a08c4678b728" />
-    <Project Path="MovieJournal.Web/MovieJournal.Web.csproj" Id="9579ed3b-9241-4215-98a8-fd9840c2d65a" />
+    <Project Path="src/MovieJournal.Infrastructure/MovieJournal.Infrastructure.csproj" Id="bf44b3b8-b17a-42cd-b7d6-a08c4678b728" />
+    <Project Path="src/MovieJournal.Web/MovieJournal.Web.csproj" Id="9579ed3b-9241-4215-98a8-fd9840c2d65a" />
     <Project Path="src/MovieJournal.Application/MovieJournal.Application.csproj" Id="8520ccd9-3cb7-4350-b130-a6d4ae86dbd9" />
     <Project Path="src/MovieJournal.Domain/MovieJournal.Domain.csproj" />
   </Folder>
   <Folder Name="/tests/">
-    <Project Path="MovieJournal.Application.UnitTests/MovieJournal.Application.UnitTests.csproj" Id="48b19f48-9ff8-42a5-9499-7d6453b8b639" />
-    <Project Path="MovieJournal.Domain.UnitTests/MovieJournal.Domain.UnitTests.csproj" Id="fd960048-5b5f-447c-b562-4e01e0157c5c" />
-    <Project Path="MovieJournal.Infrastructure.IntegrationTests/MovieJournal.Infrastructure.IntegrationTests.csproj" Id="5e637470-9606-4cc3-a156-763f2bedc6c2" />
-    <Project Path="MovieJournal.Web.IntegrationTests/MovieJournal.Web.IntegrationTests.csproj" Id="6f4adcae-b531-41ac-9747-7f616591b060" />
+    <Project Path="tests/MovieJournal.Application.UnitTests/MovieJournal.Application.UnitTests.csproj" Id="48b19f48-9ff8-42a5-9499-7d6453b8b639" />
+    <Project Path="tests/MovieJournal.Domain.UnitTests/MovieJournal.Domain.UnitTests.csproj" Id="fd960048-5b5f-447c-b562-4e01e0157c5c" />
+    <Project Path="tests/MovieJournal.Infrastructure.IntegrationTests/MovieJournal.Infrastructure.IntegrationTests.csproj" Id="5e637470-9606-4cc3-a156-763f2bedc6c2" />
+    <Project Path="tests/MovieJournal.Web.IntegrationTests/MovieJournal.Web.IntegrationTests.csproj" Id="6f4adcae-b531-41ac-9747-7f616591b060" />
   </Folder>
 </Solution>

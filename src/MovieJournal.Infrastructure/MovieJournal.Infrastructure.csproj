@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\src\MovieJournal.Application\MovieJournal.Application.csproj" />
+    <ProjectReference Include="..\MovieJournal.Application\MovieJournal.Application.csproj" />
   </ItemGroup>
 
 </Project>

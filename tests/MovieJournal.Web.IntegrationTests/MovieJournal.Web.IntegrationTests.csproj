@@ -20,7 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MovieJournal.Web\MovieJournal.Web.csproj" />
+    <ProjectReference Include="..\..\src\MovieJournal.Web\MovieJournal.Web.csproj" />
   </ItemGroup>
 
 </Project>

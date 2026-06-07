@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\src\MovieJournal.Application\MovieJournal.Application.csproj" />
+    <ProjectReference Include="..\..\src\MovieJournal.Infrastructure\MovieJournal.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

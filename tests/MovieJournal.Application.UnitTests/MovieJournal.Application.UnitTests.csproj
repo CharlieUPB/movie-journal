@@ -15,11 +15,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\src\MovieJournal.Domain\MovieJournal.Domain.csproj" />
+    <Using Include="Xunit" />
   </ItemGroup>
 
   <ItemGroup>
-    <Using Include="Xunit" />
+    <ProjectReference Include="..\..\src\MovieJournal.Application\MovieJournal.Application.csproj" />
   </ItemGroup>
 
 </Project>

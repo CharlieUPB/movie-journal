@@ -1,6 +1,7 @@
 using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json;
+using MovieJournal.Application.MovieReviews.Responses;
 using MovieJournal.Web.IntegrationTests.TestInfrastructure;
 
 namespace MovieJournal.Web.IntegrationTests.MovieReviews;
@@ -19,7 +20,7 @@ public class MovieReviewsEndpointsTests
         using var client = factory.CreateClient();
 
         var response = await client.GetAsync("/api/movie-reviews");
-        var body = await response.Content.ReadFromJsonAsync<MovieReviewsListResponseDto>(JsonOptions);
+        var body = await response.Content.ReadFromJsonAsync<MovieReviewsListResponse>(JsonOptions);
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.NotNull(body);
@@ -34,7 +35,7 @@ public class MovieReviewsEndpointsTests
         using var client = factory.CreateClient();
 
         var response = await client.GetAsync("/api/movie-reviews/published");
-        var body = await response.Content.ReadFromJsonAsync<MovieReviewsListResponseDto>(JsonOptions);
+        var body = await response.Content.ReadFromJsonAsync<MovieReviewsListResponse>(JsonOptions);
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.NotNull(body);
@@ -49,7 +50,7 @@ public class MovieReviewsEndpointsTests
         using var client = factory.CreateClient();
 
         var response = await client.GetAsync("/api/movie-reviews/my");
-        var body = await response.Content.ReadFromJsonAsync<MovieReviewsListResponseDto>(JsonOptions);
+        var body = await response.Content.ReadFromJsonAsync<MovieReviewsListResponse>(JsonOptions);
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.NotNull(body);
@@ -64,7 +65,7 @@ public class MovieReviewsEndpointsTests
         using var client = factory.CreateClient();
 
         var response = await client.GetAsync("/api/movie-reviews/my?status=Draft");
-        var body = await response.Content.ReadFromJsonAsync<MovieReviewsListResponseDto>(JsonOptions);
+        var body = await response.Content.ReadFromJsonAsync<MovieReviewsListResponse>(JsonOptions);
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.NotNull(body);
@@ -83,7 +84,7 @@ public class MovieReviewsEndpointsTests
         using var client = factory.CreateClient();
 
         var response = await client.GetAsync($"/api/movie-reviews/{SeededPublishedReviewId}");
-        var body = await response.Content.ReadFromJsonAsync<MovieReviewResponseDto>(JsonOptions);
+        var body = await response.Content.ReadFromJsonAsync<MovieReviewResponse>(JsonOptions);
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.NotNull(body);
@@ -113,7 +114,7 @@ public class MovieReviewsEndpointsTests
         var request = CreateMovieReviewRequest();
 
         var response = await client.PostAsJsonAsync("/api/movie-reviews", request);
-        var body = await response.Content.ReadFromJsonAsync<MovieReviewResponseDto>(JsonOptions);
+        var body = await response.Content.ReadFromJsonAsync<MovieReviewResponse>(JsonOptions);
 
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
         Assert.NotNull(response.Headers.Location);
@@ -147,7 +148,7 @@ public class MovieReviewsEndpointsTests
         using var factory = new MovieJournalWebApplicationFactory();
         using var client = factory.CreateClient();
         var createResponse = await client.PostAsJsonAsync("/api/movie-reviews", CreateMovieReviewRequest());
-        var createdReview = await createResponse.Content.ReadFromJsonAsync<MovieReviewResponseDto>(JsonOptions);
+        var createdReview = await createResponse.Content.ReadFromJsonAsync<MovieReviewResponse>(JsonOptions);
         var updateRequest = new
         {
             MovieTitle = "Updated title",
@@ -158,7 +159,7 @@ public class MovieReviewsEndpointsTests
         };
 
         var response = await client.PutAsJsonAsync($"/api/movie-reviews/{createdReview!.Id}", updateRequest);
-        var body = await response.Content.ReadFromJsonAsync<MovieReviewResponseDto>(JsonOptions);
+        var body = await response.Content.ReadFromJsonAsync<MovieReviewResponse>(JsonOptions);
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.NotNull(body);
@@ -175,7 +176,7 @@ public class MovieReviewsEndpointsTests
         using var factory = new MovieJournalWebApplicationFactory();
         using var client = factory.CreateClient();
         var createResponse = await client.PostAsJsonAsync("/api/movie-reviews", CreateMovieReviewRequest());
-        var createdReview = await createResponse.Content.ReadFromJsonAsync<MovieReviewResponseDto>(JsonOptions);
+        var createdReview = await createResponse.Content.ReadFromJsonAsync<MovieReviewResponse>(JsonOptions);
 
         var deleteResponse = await client.DeleteAsync($"/api/movie-reviews/{createdReview!.Id}");
         var getResponse = await client.GetAsync($"/api/movie-reviews/{createdReview.Id}");
@@ -190,7 +191,7 @@ public class MovieReviewsEndpointsTests
         using var factory = new MovieJournalWebApplicationFactory();
         using var client = factory.CreateClient();
         var createResponse = await client.PostAsJsonAsync("/api/movie-reviews", CreateMovieReviewRequest());
-        var createdReview = await createResponse.Content.ReadFromJsonAsync<MovieReviewResponseDto>(JsonOptions);
+        var createdReview = await createResponse.Content.ReadFromJsonAsync<MovieReviewResponse>(JsonOptions);
 
         var firstDeleteResponse = await client.DeleteAsync($"/api/movie-reviews/{createdReview!.Id}");
         var secondDeleteResponse = await client.DeleteAsync($"/api/movie-reviews/{createdReview.Id}");
@@ -206,7 +207,7 @@ public class MovieReviewsEndpointsTests
         using var client = factory.CreateClient();
 
         var response = await client.PostAsync($"/api/movie-reviews/{SeededDraftReviewId}/publish", null);
-        var body = await response.Content.ReadFromJsonAsync<MovieReviewResponseDto>(JsonOptions);
+        var body = await response.Content.ReadFromJsonAsync<MovieReviewResponse>(JsonOptions);
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.NotNull(body);
@@ -248,7 +249,7 @@ public class MovieReviewsEndpointsTests
         using var client = factory.CreateClient();
 
         var response = await client.PostAsync($"/api/movie-reviews/{SeededPublishedReviewId}/archive", null);
-        var body = await response.Content.ReadFromJsonAsync<MovieReviewResponseDto>(JsonOptions);
+        var body = await response.Content.ReadFromJsonAsync<MovieReviewResponse>(JsonOptions);
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.NotNull(body);
@@ -275,12 +276,12 @@ public class MovieReviewsEndpointsTests
         using var factory = new MovieJournalWebApplicationFactory();
         using var client = factory.CreateClient();
         var createResponse = await client.PostAsJsonAsync("/api/movie-reviews", CreateMovieReviewRequest());
-        var createdReview = await createResponse.Content.ReadFromJsonAsync<MovieReviewResponseDto>(JsonOptions);
+        var createdReview = await createResponse.Content.ReadFromJsonAsync<MovieReviewResponse>(JsonOptions);
 
         var firstArchiveResponse = await client.PostAsync($"/api/movie-reviews/{createdReview!.Id}/archive", null);
-        var firstArchiveBody = await firstArchiveResponse.Content.ReadFromJsonAsync<MovieReviewResponseDto>(JsonOptions);
+        var firstArchiveBody = await firstArchiveResponse.Content.ReadFromJsonAsync<MovieReviewResponse>(JsonOptions);
         var secondArchiveResponse = await client.PostAsync($"/api/movie-reviews/{createdReview.Id}/archive", null);
-        var secondArchiveBody = await secondArchiveResponse.Content.ReadFromJsonAsync<MovieReviewResponseDto>(JsonOptions);
+        var secondArchiveBody = await secondArchiveResponse.Content.ReadFromJsonAsync<MovieReviewResponse>(JsonOptions);
 
         Assert.Equal(HttpStatusCode.OK, firstArchiveResponse.StatusCode);
         Assert.Equal("Archived", firstArchiveBody?.Status);
@@ -300,21 +301,7 @@ public class MovieReviewsEndpointsTests
         };
     }
 
-    private sealed record MovieReviewsListResponseDto(IReadOnlyList<MovieReviewResponseDto> Reviews);
-
-    private sealed record MovieReviewResponseDto(
-        Guid Id,
-        Guid UserId,
-        string MovieTitle,
-        int? MovieReleaseYear,
-        string ReviewTitle,
-        string ReviewContent,
-        int ReviewRating,
-        string Status,
-        DateTime CreatedAt,
-        DateTime? UpdatedAt);
-
-    private sealed record ProblemDetailsResponseDto(
+    private record ProblemDetailsResponseDto(
         string? Title,
         string? Detail,
         int? Status);
