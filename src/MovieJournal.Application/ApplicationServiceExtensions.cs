@@ -11,6 +11,8 @@ public static class ApplicationServiceExtensions
         services.AddScoped<CreateMovieReviewCmd>();
         services.AddScoped<UpdateMovieReviewCmd>();
         services.AddScoped<DeleteMovieReviewCmd>();
+        services.AddScoped<PublishMovieReviewCmd>();
+        services.AddScoped<ArchiveMovieReviewCmd>();
 
         services.AddScoped<GetMovieReviewQuery>();
         services.AddScoped<ListMovieReviewsByUserIdAndStatusQuery>();

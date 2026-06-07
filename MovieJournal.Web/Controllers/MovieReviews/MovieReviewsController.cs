@@ -6,7 +6,7 @@ using MovieJournal.Domain.Enums;
 
 namespace MovieJournal.Web.Controllers.MovieReviews;
 
-[Route("api/[controller]")]
+[Route("api/movie-reviews")]
 [ApiController]
 public class MovieReviewsController : ControllerBase
 {
@@ -14,6 +14,8 @@ public class MovieReviewsController : ControllerBase
     private readonly CreateMovieReviewCmd _createMovieReviewCmd;
     private readonly UpdateMovieReviewCmd _updateMovieReviewCmd;
     private readonly DeleteMovieReviewCmd _deleteMovieReviewCmd;
+    private readonly PublishMovieReviewCmd _publishMovieReviewCmd;
+    private readonly ArchiveMovieReviewCmd _archiveMovieReviewCmd;
 
     private readonly GetMovieReviewQuery _getMovieReviewQuery;
     private readonly ListMovieReviewsQuery _listMovieReviewsQuery;
@@ -25,6 +27,8 @@ public class MovieReviewsController : ControllerBase
         CreateMovieReviewCmd createMovieReviewCmd,
         UpdateMovieReviewCmd updateMovieReviewCmd,
         DeleteMovieReviewCmd deleteMovieReviewCmd,
+        PublishMovieReviewCmd publishMovieReviewCmd,
+        ArchiveMovieReviewCmd archiveMovieReviewCmd,
         GetMovieReviewQuery getMovieReviewQuery,
         ListMovieReviewsQuery listMovieReviewsQuery,
         ListPublishedMovieReviewsQuery listPublishedMovieReviewsQuery,
@@ -34,6 +38,8 @@ public class MovieReviewsController : ControllerBase
         _createMovieReviewCmd = createMovieReviewCmd;
         _updateMovieReviewCmd = updateMovieReviewCmd;
         _deleteMovieReviewCmd = deleteMovieReviewCmd;
+        _publishMovieReviewCmd = publishMovieReviewCmd;
+        _archiveMovieReviewCmd = archiveMovieReviewCmd;
         _getMovieReviewQuery = getMovieReviewQuery;
         _listMovieReviewsQuery = listMovieReviewsQuery;
         _listPublishedMovieReviewsQuery = listPublishedMovieReviewsQuery;
@@ -124,6 +130,26 @@ public class MovieReviewsController : ControllerBase
             body.MovieReleaseYear);
 
         var result = await _updateMovieReviewCmd.Execute(request);
+
+        return Ok(result);
+    }
+
+    [HttpPost("{id:guid}/publish")]
+    public async Task<IActionResult> PublishMovieReview(Guid id)
+    {
+        var userId = GetCurrentUserId();
+
+        var result = await _publishMovieReviewCmd.Execute(new PublishMovieReviewRequest(id, userId));
+
+        return Ok(result);
+    }
+
+    [HttpPost("{id:guid}/archive")]
+    public async Task<IActionResult> ArchiveMovieReview(Guid id)
+    {
+        var userId = GetCurrentUserId();
+
+        var result = await _archiveMovieReviewCmd.Execute(new ArchiveMovieReviewRequest(id, userId));
 
         return Ok(result);
     }

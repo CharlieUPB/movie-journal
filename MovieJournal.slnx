@@ -8,5 +8,7 @@
   <Folder Name="/tests/">
     <Project Path="MovieJournal.Application.UnitTests/MovieJournal.Application.UnitTests.csproj" Id="48b19f48-9ff8-42a5-9499-7d6453b8b639" />
     <Project Path="MovieJournal.Domain.UnitTests/MovieJournal.Domain.UnitTests.csproj" Id="fd960048-5b5f-447c-b562-4e01e0157c5c" />
+    <Project Path="MovieJournal.Infrastructure.IntegrationTests/MovieJournal.Infrastructure.IntegrationTests.csproj" Id="5e637470-9606-4cc3-a156-763f2bedc6c2" />
+    <Project Path="MovieJournal.Web.IntegrationTests/MovieJournal.Web.IntegrationTests.csproj" Id="6f4adcae-b531-41ac-9747-7f616591b060" />
   </Folder>
 </Solution>
