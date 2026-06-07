@@ -7,7 +7,6 @@ using MovieJournal.Domain.ValueObjects;
 
 public class MovieReview : AuditableEntity
 {
-    private readonly List<ReviewComment> _comments = new();
     public Guid UserId { get; private set; }
 
     public MovieInformation MovieInformation { get; private set; }
@@ -15,8 +14,6 @@ public class MovieReview : AuditableEntity
     public ReviewInformation ReviewInformation { get; private set; }
 
     public ReviewStatus Status { get; private set; }
-
-    public IReadOnlyCollection<ReviewComment> Comments => _comments.AsReadOnly();
 
     private MovieReview(
         Guid id,
@@ -126,15 +123,11 @@ public class MovieReview : AuditableEntity
         MarkAsDeleted();
     }
 
-    public void AddComment(ReviewComment comment)
+    public void EnsureCanReceiveComments()
     {
-        if (Status == ReviewStatus.Archived)
+        if (Status != ReviewStatus.Published)
         {
-            throw new DomainException("Can't add comments to archived reviews");
+            throw new DomainException("Comments are allowed only on published reviews");
         }
-
-        _comments.Add(comment);
-
-        MarkAsUpdated();
     }
 }

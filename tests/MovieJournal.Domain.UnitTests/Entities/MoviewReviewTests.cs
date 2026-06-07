@@ -119,32 +119,38 @@ public class MovieReviewTests
     }
 
     [Fact]
-    public void AddComment_ShouldSaveCommentInReview()
+    public void EnsureCanReceiveComments_WhenReviewIsPublished_ShouldNotThrow()
     {
-        var review = CreateMovieReview();
+        var movieReview = CreateMovieReview();
+        movieReview.PublishReview();
 
-        var comment = ReviewComment.Create(review.Id, Guid.NewGuid(), "Indeed, best movie ever");
+        var exception = Record.Exception(() =>
+            movieReview.EnsureCanReceiveComments());
 
-        review.AddComment(comment);
-
-        Assert.Contains(comment, review.Comments);
+        Assert.Null(exception);
     }
 
+    [Fact]
+    public void EnsureCanReceiveComments_WhenReviewIsDraft_ShouldThrowDomainException()
+    {
+        var movieReview = CreateMovieReview();
+
+        var exception = Assert.Throws<DomainException>(() =>
+            movieReview.EnsureCanReceiveComments());
+
+        Assert.Equal("Comments are allowed only on published reviews", exception.Message);
+    }
 
     [Fact]
-    public void AddCommentOnArchivedReview_ShouldThrowException()
+    public void EnsureCanReceiveComments_WhenReviewIsArchived_ShouldThrowDomainException()
     {
-        var review = CreateMovieReview();
+        var movieReview = CreateMovieReview();
+        movieReview.ArchiveReview();
 
-        review.ArchiveReview();
+        var exception = Assert.Throws<DomainException>(() =>
+            movieReview.EnsureCanReceiveComments());
 
-        var comment = ReviewComment.Create(review.Id, Guid.NewGuid(), "Indeed, best movie ever");
-
-        var exception = Assert.Throws<DomainException>(() => review.AddComment(comment));
-
-        Assert.Equal("Can't add comments to archived reviews", exception.Message);
-
-        Assert.Empty(review.Comments);
+        Assert.Equal("Comments are allowed only on published reviews", exception.Message);
     }
 
     private static MovieReview CreateMovieReview(Guid? userId = null)

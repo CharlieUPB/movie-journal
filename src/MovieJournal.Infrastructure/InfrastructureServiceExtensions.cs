@@ -1,9 +1,11 @@
-﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MovieJournal.Application.MovieReviews;
+using MovieJournal.Application.ReviewComments;
 using MovieJournal.Infrastructure.Persistence.Connection;
 using MovieJournal.Infrastructure.Persistence.Initializer;
 using MovieJournal.Infrastructure.Persistence.MovieReviews;
+using MovieJournal.Infrastructure.Persistence.ReviewComments;
 
 namespace MovieJournal.Infrastructure;
 
@@ -29,6 +31,7 @@ public static class InfrastructureServiceExtensions
     public static IServiceCollection AddRepositories(this IServiceCollection services)
     {
         services.AddScoped<IMovieReviewsRepository, MovieReviewsRepository>();
+        services.AddScoped<IReviewCommentsRepository, ReviewCommentsRepository>();
 
         return services;
     }

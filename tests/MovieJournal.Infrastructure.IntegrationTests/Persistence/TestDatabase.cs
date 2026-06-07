@@ -5,6 +5,7 @@ using MovieJournal.Domain.ValueObjects;
 using MovieJournal.Infrastructure.Persistence.Connection;
 using MovieJournal.Infrastructure.Persistence.Initializer;
 using MovieJournal.Infrastructure.Persistence.MovieReviews;
+using MovieJournal.Infrastructure.Persistence.ReviewComments;
 
 namespace MovieJournal.Infrastructure.IntegrationTests.Persistence;
 
@@ -21,11 +22,13 @@ internal sealed class TestDatabase : IDisposable
         DatabasePath = databasePath;
         _connectionFactory = new SqliteConnectionFactory($"Data Source={databasePath};Pooling=False");
         Repository = new MovieReviewsRepository(_connectionFactory);
+        ReviewCommentsRepository = new ReviewCommentsRepository(_connectionFactory);
         Initializer = new SqliteDatabaseInitializer(_connectionFactory);
     }
 
     public string DatabasePath { get; }
     public MovieReviewsRepository Repository { get; }
+    public ReviewCommentsRepository ReviewCommentsRepository { get; }
     public SqliteDatabaseInitializer Initializer { get; }
 
     public static async Task<TestDatabase> CreateAsync(bool clearMovieReviewData = false)
@@ -62,6 +65,17 @@ internal sealed class TestDatabase : IDisposable
             rating);
 
         return MovieReview.Create(userId ?? DemoUserId, movieInformation, reviewInformation);
+    }
+
+    public static ReviewComment CreateValidReviewComment(
+        Guid movieReviewId,
+        Guid? userId = null,
+        string content = "I agree with this review and enjoyed reading the author's thoughts.")
+    {
+        return ReviewComment.Create(
+            movieReviewId,
+            userId ?? DemoUserId,
+            content);
     }
 
     public bool TableExists(string tableName)
