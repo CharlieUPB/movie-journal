@@ -1,8 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using MovieJournal.Application.MovieReviews.Commands;
 using MovieJournal.Application.MovieReviews.Queries;
 using MovieJournal.Application.MovieReviews.Requests;
 using MovieJournal.Domain.Enums;
+using MovieJournal.Web.Authentication;
 
 namespace MovieJournal.Web.Controllers.MovieReviews;
 
@@ -10,7 +12,6 @@ namespace MovieJournal.Web.Controllers.MovieReviews;
 [ApiController]
 public class MovieReviewsController : ControllerBase
 {
-
     private readonly CreateMovieReviewCmd _createMovieReviewCmd;
     private readonly UpdateMovieReviewCmd _updateMovieReviewCmd;
     private readonly DeleteMovieReviewCmd _deleteMovieReviewCmd;
@@ -63,16 +64,16 @@ public class MovieReviewsController : ControllerBase
         return Ok(result);
     }
 
+    [Authorize]
     [HttpGet("my")]
     public async Task<IActionResult> GetMyMovieReviews([FromQuery] ReviewStatus? status)
     {
-        var userId = GetCurrentUserId();
+        var userId = User.GetRequiredUserId();
 
         if (status.HasValue)
         {
             var resultByStatus = await _listMovieReviewsByUserIdAndStatusQuery.Execute(
-                new ListMovieReviewsByUserIdAndStatusRequest(userId, status.Value)
-            );
+                new ListMovieReviewsByUserIdAndStatusRequest(userId, status.Value));
 
             return Ok(resultByStatus);
         }
@@ -85,17 +86,18 @@ public class MovieReviewsController : ControllerBase
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetMovieReviewById(Guid id)
     {
-        var userId = GetCurrentUserIdOrNull();
+        var userId = User.GetOptionalUserId();
 
         var result = await _getMovieReviewQuery.Execute(new GetMovieReviewRequest(id, userId));
 
         return Ok(result);
     }
 
+    [Authorize]
     [HttpPost]
     public async Task<IActionResult> CreateMovieReview([FromBody] CreateMovieReviewHttpRequest body)
     {
-        var userId = GetCurrentUserId();
+        var userId = User.GetRequiredUserId();
 
         var request = new CreateMovieRequest(
             userId,
@@ -113,12 +115,13 @@ public class MovieReviewsController : ControllerBase
             result);
     }
 
+    [Authorize]
     [HttpPut("{id:guid}")]
     public async Task<IActionResult> UpdateMovieReview(
-    Guid id,
-    [FromBody] UpdateMovieReviewHttpRequest body)
+        Guid id,
+        [FromBody] UpdateMovieReviewHttpRequest body)
     {
-        var userId = GetCurrentUserId();
+        var userId = User.GetRequiredUserId();
 
         var request = new UpdateMovieReviewRequest(
             id,
@@ -134,45 +137,36 @@ public class MovieReviewsController : ControllerBase
         return Ok(result);
     }
 
+    [Authorize]
     [HttpPost("{id:guid}/publish")]
     public async Task<IActionResult> PublishMovieReview(Guid id)
     {
-        var userId = GetCurrentUserId();
+        var userId = User.GetRequiredUserId();
 
         var result = await _publishMovieReviewCmd.Execute(new PublishMovieReviewRequest(id, userId));
 
         return Ok(result);
     }
 
+    [Authorize]
     [HttpPost("{id:guid}/archive")]
     public async Task<IActionResult> ArchiveMovieReview(Guid id)
     {
-        var userId = GetCurrentUserId();
+        var userId = User.GetRequiredUserId();
 
         var result = await _archiveMovieReviewCmd.Execute(new ArchiveMovieReviewRequest(id, userId));
 
         return Ok(result);
     }
 
+    [Authorize]
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> DeleteMovieReview(Guid id)
     {
-        var userId = GetCurrentUserId();
+        var userId = User.GetRequiredUserId();
 
         await _deleteMovieReviewCmd.Execute(new DeleteMovieReviewRequest(id, userId));
 
         return NoContent();
-    }
-
-    private static Guid GetCurrentUserId()
-    {
-        return Guid.Parse("11111111-1111-1111-1111-111111111111");
-    }
-
-    private static Guid? GetCurrentUserIdOrNull()
-    {
-        // For now, return the demo user.
-        // Later, return null when the user is anonymous.
-        return Guid.Parse("11111111-1111-1111-1111-111111111111");
     }
 }

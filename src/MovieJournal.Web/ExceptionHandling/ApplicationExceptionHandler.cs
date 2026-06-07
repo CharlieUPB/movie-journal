@@ -9,6 +9,18 @@ public class ApplicationExceptionHandler : IExceptionHandler
 {
     public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
     {
+        if (exception is UnauthorizedAccessException unauthorizedAccessException)
+        {
+            await WriteProblemDetailsAsync(
+                httpContext,
+                StatusCodes.Status401Unauthorized,
+                "Unauthorized",
+                unauthorizedAccessException.Message,
+                cancellationToken);
+
+            return true;
+        }
+
         if (exception is DomainException domainException)
         {
             await WriteProblemDetailsAsync(
