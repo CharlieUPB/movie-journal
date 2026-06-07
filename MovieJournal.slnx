@@ -2,6 +2,10 @@
   <Folder Name="/src/">
     <Project Path="src/MovieJournal.Infrastructure/MovieJournal.Infrastructure.csproj" Id="bf44b3b8-b17a-42cd-b7d6-a08c4678b728" />
     <Project Path="src/MovieJournal.Web/MovieJournal.Web.csproj" Id="9579ed3b-9241-4215-98a8-fd9840c2d65a" />
+    <Project Path="MovieJournal.WebUi/MovieJournal.WebUi.esproj">
+      <Build />
+      <Deploy />
+    </Project>
     <Project Path="src/MovieJournal.Application/MovieJournal.Application.csproj" Id="8520ccd9-3cb7-4350-b130-a6d4ae86dbd9" />
     <Project Path="src/MovieJournal.Domain/MovieJournal.Domain.csproj" />
   </Folder>
