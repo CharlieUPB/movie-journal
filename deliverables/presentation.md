@@ -295,3 +295,17 @@ Registered User
 - Comments are not allowed on archived reviews.
 - Comment content is required.
 - Comment content must not exceed a reasonable length, for example 500 characters.
+
+# Development Process and guidelines of my approach to Clean Architecture:
+
+The domain layer, contains the entitites, value objects, value objects avoid primtiive obsession by representing a domain valid unit of work. Inside the domain layer we have business rules validations, belonging to the specific use case of the movie journal. 
+
+In the application layer we have specific use cases for our domain, like CreateMovieReview, the use cases are represented by Commands and Queries (Based in CQRS) the application layer uses a repository interface but is not aware of the exact implementation, the application uses the domain exposed methods (business logic) and interacts
+ with the repository, it is also expert on knowing what request receiv and what response a domain use case needs as input and what ouputs produces. The applicaiton layer makes use of Extension methods to provide The respective commands and queries.
+The application layer uses domain objects business logics. and expose them as self contained commands and queries. 
+
+In the infrastruture layer we have the implementation of the repository interface required by the application layer, the repository for now it is built by using SQL Lite and ADO.NET, the repository could be any kind of persisintce, file system, in memory, Entity framework, etc. The infra layer  also takes care of the DB initialzation for data seed, as well as providing in the DI container the implementation for the repository interfaces, all of this is done via Extension Methods of the ServiceCollection. The infra layer provides repository implemtantions, database connections and a databaseinitialization logic.
+
+The Web layer (AKA Presentation Layer) is the outermost layer and is the Container root that glues things together, this layer uses services extensions to register ApplicationServices, InfrastructureServices, Initializes the DB, is aware of external configurations, and the shape of this presentation layer is a REST API that will expose Application Use Cases (Command, Queries) through rest endpoints.  IT also handles exception handler since the domain layer can throw business domain exceptions. 
+
+

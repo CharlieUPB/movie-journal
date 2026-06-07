@@ -13,6 +13,6 @@ public interface IMovieReviewsRepository
     #region Query
     Task<MovieReview?> GetByIdAsync(Guid id);
 
-    Task<IReadOnlyList<MovieReview>> GetAllByUserIdAsync(Guid userId);
+    Task<IReadOnlyList<MovieReview>> ListAsync(MovieReviewQueryCriteria criteria);
     #endregion
 }

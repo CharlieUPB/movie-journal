@@ -3,11 +3,10 @@ using System.Data;
 
 namespace MovieJournal.Infrastructure.Persistence.Connection;
 
-public class SqliteConnectionFactory : ISqlConnectionFactory, IDisposable
+public class SqliteConnectionFactory : ISqlConnectionFactory
 {
 
     private readonly string _connectionString;
-    private IDbConnection? _connection;
 
     public SqliteConnectionFactory(string connectionString)
     {
@@ -29,23 +28,7 @@ public class SqliteConnectionFactory : ISqlConnectionFactory, IDisposable
 
     public IDbConnection GetOpenConnection()
     {
-        if (_connection == null || _connection.State != ConnectionState.Open)
-        {
-            _connection = new SqliteConnection(_connectionString);
-            _connection.Open();
-        }
-
-        return _connection;
+        return CreateNewConnection();
     }
-
-    public void Dispose()
-    {
-        if (_connection != null && _connection.State == ConnectionState.Open)
-        {
-            _connection.Close();
-            _connection.Dispose();
-        }
-    }
-
 }
 

@@ -8,4 +8,6 @@ public record MovieReviewResponse(
     string ReviewTitle,
     string ReviewContent,
     int ReviewRating,
-    string Status);
+    string Status,
+    DateTime CreatedAt,
+    DateTime? UpdatedAt);
